@@ -428,6 +428,8 @@ table.data tr.gated:nth-child(even):hover{background:var(--n100)}
   padding:10px 14px;font-size:14px;color:var(--n900);background:var(--surface);outline:none;
 }
 .field input:focus,.field select:focus{border-color:var(--primary)}
+.field-help{font-size:12px;color:var(--n500);margin-top:6px;line-height:1.45}
+.signon-error{font-size:12px;color:#B91C1C;margin-top:6px;min-height:18px}
 .btn-primary{
   width:100%;border:none;border-radius:var(--r-md);background:var(--primary);color:#fff;
   font-size:15px;font-weight:600;padding:12px 20px;margin-top:6px;
@@ -721,7 +723,9 @@ tr.row-new td{background:var(--primary-light)!important}
     </div>
     <div class="field">
       <label>Password</label>
-      <input type="password" value="password123">
+      <input type="password" id="signonPassword" placeholder="Enter shared access password" autocomplete="current-password">
+      <div class="field-help">Shared access password for this demo site.</div>
+      <div class="signon-error" id="signonError" role="alert" aria-live="polite"></div>
     </div>
     <button class="btn-primary" id="signinBtn">Sign In</button>
   </div>
@@ -918,6 +922,30 @@ tr.row-new td{background:var(--primary-light)!important}
    Student EI Demo — Checkpoint 2
    Deterministic only. No network calls. No randomness.
    ================================================================ */
+
+/* ================= AUTH SETTINGS ================= */
+const AUTH = {
+  storageKey: "studentei_shared_auth_v1",
+  sharedPassword: "ChangeMe-StudentEI-2026"
+};
+
+function isAuthenticated(){
+  return sessionStorage.getItem(AUTH.storageKey) === "ok";
+}
+
+function setAuthenticated(value){
+  if (value) sessionStorage.setItem(AUTH.storageKey, "ok");
+  else sessionStorage.removeItem(AUTH.storageKey);
+}
+
+function showSignonError(msg){
+  const errorEl = document.getElementById("signonError");
+  if (errorEl) errorEl.textContent = msg;
+}
+
+function clearSignonError(){
+  showSignonError("");
+}
 
 /* ================= MOCK DATA ================= */
 const COMPS = ["Self-Management","Teamwork","Creativity","Adaptability","Communication"];
@@ -2831,7 +2859,16 @@ function render(){
 
   const signon = document.getElementById("signon");
   const app = document.getElementById("app");
-  if (name === "signon") { signon.hidden = false; app.style.display = "none"; return; }
+  if (!isAuthenticated()) {
+    signon.hidden = false;
+    app.style.display = "none";
+    if (name !== "signon") location.hash = "#/signon";
+    return;
+  }
+  if (name === "signon") {
+    location.hash = ROLES[currentRole].student ? "#/my-dashboard" : "#/home";
+    return;
+  }
   signon.hidden = true; app.style.display = "flex";
 
   const view = document.getElementById("view");
@@ -3330,6 +3367,10 @@ document.querySelectorAll(".role-item[data-role]").forEach(el => {
 
 /* Sign out → back to district sign-on */
 document.getElementById("signOutBtn").addEventListener("click", () => {
+  setAuthenticated(false);
+  clearSignonError();
+  const signonPassword = document.getElementById("signonPassword");
+  if (signonPassword) signonPassword.value = "";
   roleMenu.hidden = true;
   location.hash = "#/signon";
 });
@@ -3345,7 +3386,20 @@ const signonRole = document.getElementById("signonRole");
 signonRole.addEventListener("change", () => {
   document.getElementById("signonEmail").value = ROLE_EMAILS[signonRole.value];
 });
+const signonPassword = document.getElementById("signonPassword");
+signonPassword.addEventListener("input", clearSignonError);
+signonPassword.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("signinBtn").click();
+});
 document.getElementById("signinBtn").addEventListener("click", () => {
+  const enteredPassword = signonPassword.value;
+  if (enteredPassword !== AUTH.sharedPassword) {
+    showSignonError("Incorrect password. Please try again.");
+    return;
+  }
+  setAuthenticated(true);
+  clearSignonError();
+  signonPassword.value = "";
   applyRole(signonRole.value);
   location.hash = ROLES[signonRole.value].student ? "#/my-dashboard" : "#/home";
 });
