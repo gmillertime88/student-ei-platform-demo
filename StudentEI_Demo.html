@@ -724,7 +724,7 @@ tr.row-new td{background:var(--primary-light)!important}
     <div class="field">
       <label>Password</label>
       <input type="password" id="signonPassword" placeholder="Enter shared access password" autocomplete="current-password">
-      <div class="field-help">Shared access password for this demo site.</div>
+      <div class="field-help">Shared access password for this demo site. Current demo password: <b>SEI2026Demo!</b></div>
       <div class="signon-error" id="signonError" role="alert" aria-live="polite"></div>
     </div>
     <button class="btn-primary" id="signinBtn">Sign In</button>
@@ -926,8 +926,23 @@ tr.row-new td{background:var(--primary-light)!important}
 /* ================= AUTH SETTINGS ================= */
 const AUTH = {
   storageKey: "studentei_shared_auth_v1",
-  sharedPassword: "ChangeMe-StudentEI-2026"
+  sharedPassword: "SEI2026Demo!"
 };
+
+const AUTH_PASSWORD_ALIASES = [
+  AUTH.sharedPassword,
+  "sei2026demo"
+];
+
+function normalizePassword(value){
+  return String(value || "").trim();
+}
+
+function isValidPassword(value){
+  const normalized = normalizePassword(value);
+  if (!normalized) return false;
+  return AUTH_PASSWORD_ALIASES.some(p => normalized.toLowerCase() === p.toLowerCase());
+}
 
 function isAuthenticated(){
   return sessionStorage.getItem(AUTH.storageKey) === "ok";
@@ -3392,8 +3407,8 @@ signonPassword.addEventListener("keydown", (e) => {
   if (e.key === "Enter") document.getElementById("signinBtn").click();
 });
 document.getElementById("signinBtn").addEventListener("click", () => {
-  const enteredPassword = signonPassword.value;
-  if (enteredPassword !== AUTH.sharedPassword) {
+  const enteredPassword = normalizePassword(signonPassword.value);
+  if (!isValidPassword(enteredPassword)) {
     showSignonError("Incorrect password. Please try again.");
     return;
   }
