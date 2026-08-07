@@ -685,6 +685,114 @@ tr.row-new td{background:var(--primary-light)!important}
 .sis-name{font-size:17px;font-weight:700}
 .sis-status{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
 .sis-meta{font-size:13px;color:var(--n500);line-height:1.6}
+
+/* ---- Student experience (Tyler flow doc 2026-08-06) ---- */
+.stu-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:11px;font-weight:700;
+  min-width:18px;height:18px;border-radius:var(--r-pill);display:inline-flex;align-items:center;
+  justify-content:center;padding:0 5px;flex:none}
+.sa-progress{display:flex;gap:8px;max-width:860px;margin:0 auto 16px}
+.sa-seg{flex:1;height:6px;border-radius:var(--r-pill);background:var(--n200);overflow:hidden}
+.sa-seg-fill{display:block;height:100%;background:var(--primary);border-radius:var(--r-pill);transition:width .3s}
+.sa-card{max-width:860px;margin:0 auto}
+.sa-qhead{text-align:center;padding:6px 0 14px}
+.sa-qicon{width:56px;height:56px;border-radius:50%;background:var(--primary-light);color:var(--primary);
+  display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+.sa-kicker{letter-spacing:.14em;font-size:11.5px;color:var(--primary);font-weight:700;text-transform:uppercase}
+.sa-qtitle{font-size:22px;font-weight:700;color:var(--n900);margin-top:8px;line-height:1.35}
+.sa-qsub{font-size:15px;color:var(--n700);margin-top:6px}
+.sa-word{font-size:26px;font-weight:700;color:var(--primary)}
+.sa-word small{font-size:14px;font-weight:500;color:var(--n500)}
+.sa-opts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:16px 0 4px;border-top:1px solid var(--n200)}
+.sa-opt{border:1.5px solid var(--n200);border-radius:var(--r-md);padding:14px 10px;min-width:104px;flex:1;
+  text-align:center;cursor:pointer;font-weight:600;font-size:14px;color:var(--n700);background:var(--surface)}
+.sa-opt:hover{border-color:var(--primary)}
+.sa-opt.sel{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.sa-actions{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:18px;
+  border-top:1px solid var(--n200);padding-top:14px}
+.sa-demo{margin-right:auto;font-size:12px;color:var(--n500)}
+.sa-demo button{background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;font-weight:600;padding:0 2px}
+.sa-stmt{display:flex;align-items:center;gap:12px;border:1.5px solid var(--n200);border-radius:var(--r-md);
+  padding:12px 14px;margin-bottom:10px;font-size:14.5px;color:var(--n900)}
+.sa-stmt .tl{display:flex;gap:6px;margin-left:auto}
+.sa-tl-btn{border:1.5px solid var(--n200);background:var(--surface);border-radius:var(--r-pill);
+  padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--n500);cursor:pointer}
+.sa-tl-btn.most.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.sa-tl-btn.least.on{background:var(--n900);border-color:var(--n900);color:#fff}
+.sa-scenario{background:var(--primary-light);border-radius:var(--r-md);padding:14px 16px;font-size:14.5px;
+  color:var(--n900);line-height:1.55;margin-bottom:14px}
+.sa-stop{width:84px;height:84px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  background:var(--orange);color:#fff;font-weight:800;font-size:15px;letter-spacing:.06em;
+  clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+.sw-video{background:linear-gradient(135deg,var(--n900),var(--primary));border-radius:var(--r-lg);
+  color:#fff;text-align:center;padding:44px 20px;margin:16px 0;position:relative;cursor:pointer}
+.sw-video-title{font-size:24px;font-weight:700;margin-bottom:6px}
+.sw-video-sub{font-size:14.5px;color:var(--teal-light);margin-bottom:16px}
+.sw-play{width:64px;height:64px;border-radius:50%;background:#fff;color:var(--primary);display:inline-flex;
+  align-items:center;justify-content:center}
+.sw-bar{background:rgba(0,0,0,.45);border-radius:0 0 var(--r-lg) var(--r-lg);position:absolute;left:0;right:0;bottom:0;
+  padding:8px 14px;font-size:12px;text-align:left;color:#fff}
+.sw-point{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;font-size:14.5px;color:var(--n700);line-height:1.55}
+.sw-point-icon{flex:none;width:38px;height:38px;border-radius:50%;background:var(--teal-light);color:var(--teal);
+  display:flex;align-items:center;justify-content:center}
+.sdh-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:14px}
+.sdh-card{background:var(--surface);border:1px solid var(--n200);border-radius:var(--r-lg);padding:18px;
+  cursor:pointer;box-shadow:var(--shadow-card)}
+.sdh-card:hover{border-color:var(--primary)}
+.sdh-icon{width:46px;height:46px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.sdh-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.sdh-sub{font-size:13.5px;color:var(--n500);line-height:1.5}
+.sdh-cta{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--primary),var(--teal));
+  color:#fff;border-radius:var(--r-lg);padding:18px 20px;margin-top:16px;cursor:pointer}
+.sdh-cta-title{font-size:16.5px;font-weight:700}
+.sdh-cta-sub{font-size:13.5px;opacity:.9;margin-top:2px}
+.sdh-cta .go{margin-left:auto;flex:none;background:rgba(255,255,255,.2);border-radius:var(--r-pill);
+  padding:8px 16px;font-weight:600;font-size:13.5px}
+.i-dot{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;
+  border:1.5px solid var(--n500);color:var(--n500);font-size:10px;font-weight:700;font-style:italic;
+  font-family:Georgia,serif;cursor:help;margin-left:6px;flex:none}
+.mc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px}
+.mc-card{background:var(--surface);border:1px solid var(--n200);border-radius:var(--r-lg);padding:16px;text-align:center}
+.mc-icon{width:52px;height:52px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+.mc-val{font-size:22px;font-weight:700}
+.mc-val small{font-size:13px;color:var(--n500);font-weight:500}
+.mc-track{height:8px;border-radius:var(--r-pill);background:var(--n200);margin:10px 0;overflow:hidden}
+.mc-fill{height:100%;border-radius:var(--r-pill);background:var(--primary)}
+.ci-banner{display:flex;align-items:center;gap:12px;background:var(--orange-light);border:1px solid var(--orange);
+  border-radius:var(--r-lg);padding:14px 16px;margin-bottom:14px}
+.mi-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:8px}
+.mi-col{background:var(--surface);border:1px solid var(--n200);border-radius:var(--r-lg);padding:14px}
+.mi-col-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;margin-bottom:10px;color:var(--n900)}
+.mi-item{display:flex;align-items:center;gap:9px;padding:6px 2px;font-size:13.5px;color:var(--n700);cursor:pointer;border-radius:6px}
+.mi-item:hover{background:var(--n100)}
+.mi-box{width:16px;height:16px;border:1.5px solid var(--n200);border-radius:4px;flex:none;display:inline-flex;
+  align-items:center;justify-content:center;color:#fff;font-size:11px}
+.mi-item.sel .mi-box{background:var(--primary);border-color:var(--primary)}
+.mi-item.sel{color:var(--primary);font-weight:600}
+.chip-sel{display:inline-flex;align-items:center;background:var(--primary-light);color:var(--primary);
+  border-radius:var(--r-pill);padding:5px 12px;font-size:13px;font-weight:600;margin:3px 4px 3px 0}
+.mf-hero{text-align:center;padding:10px 0 18px}
+.mf-mic{width:74px;height:74px;border-radius:50%;background:var(--primary-light);color:var(--primary);
+  display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+.mf-people{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin:14px 0 4px}
+.mf-person{text-align:center;font-size:12.5px;color:var(--n700);font-weight:600}
+.mf-person .av{width:48px;height:48px;border-radius:50%;background:var(--n100);color:var(--n500);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 6px}
+.reg-link-chip{background:var(--teal-light);color:var(--teal);border-radius:var(--r-md);padding:9px 12px;
+  font-size:12.5px;font-weight:600;margin-bottom:16px;word-break:break-all}
+.reg-row{display:flex;gap:10px}
+.reg-row .field{flex:1}
+.reg-alt{text-align:center;font-size:13px;color:var(--n500);margin-top:14px}
+.reg-alt a{color:var(--primary);font-weight:600;cursor:pointer;text-decoration:none}
+.reg-mail{border:1px dashed var(--n200);border-radius:var(--r-md);padding:16px;margin-top:16px;background:var(--n100)}
+.reg-mail-tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--n500);font-weight:700;margin-bottom:8px}
+.reg-verify{background:var(--n900);color:#fff;border:none;border-radius:var(--r-sm);padding:10px 18px;
+  font-weight:700;font-size:13px;letter-spacing:.04em;cursor:pointer;display:block;margin:12px auto}
+.pw-req{list-style:none;padding:0;margin:8px 0 14px}
+.pw-req li{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--n500);padding:3px 0}
+.pw-req li .ck{width:16px;height:16px;border-radius:50%;background:var(--n200);color:#fff;font-size:10px;
+  display:inline-flex;align-items:center;justify-content:center;flex:none}
+.pw-req li.ok{color:var(--risk-low-fg)}
+.pw-req li.ok .ck{background:var(--success)}
 </style>
 </head>
 <body>
@@ -715,6 +823,15 @@ tr.row-new td{background:var(--primary-light)!important}
       <input type="text" id="signonEmail" value="d.whitfield@delmarcsd.org" readonly>
     </div>
     <button class="btn-primary" id="signinBtn">Sign In</button>
+    <div class="reg-alt">New student? <a id="createAcctLink">Create your account</a></div>
+  </div>
+</div>
+
+<!-- ================= STUDENT REGISTRATION (route #/student-register) ================= -->
+<div class="signon" id="studentReg" hidden>
+  <div class="signon-card" style="max-width:520px">
+    <div class="signon-brand" id="regBrand"></div>
+    <div id="regBody"></div>
   </div>
 </div>
 
@@ -730,9 +847,26 @@ tr.row-new td{background:var(--primary-light)!important}
     </div>
 
     <nav class="nav">
-      <a class="nav-item" data-route="my-dashboard" href="#/my-dashboard" id="navStudentHome" hidden>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      <a class="nav-item stu-nav" data-route="my-dashboard" href="#/my-dashboard" id="navStudentHome" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>
         <span class="nav-label">My Dashboard</span>
+      </a>
+      <a class="nav-item stu-nav" data-route="my-durable-skills" href="#/my-durable-skills" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7.5" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M4 19c0-2.8 2.2-4.5 5-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M14 19v-4M17.5 19v-7M21 19v-10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span class="nav-label">My Durable Skills</span>
+      </a>
+      <a class="nav-item stu-nav" data-route="my-credentials" href="#/my-credentials" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="5" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <span class="nav-label">My Credentials</span>
+        <span class="stu-badge" id="credBadge">1</span>
+      </a>
+      <a class="nav-item stu-nav" data-route="my-interests" href="#/my-interests" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        <span class="nav-label">My Interests</span>
+      </a>
+      <a class="nav-item stu-nav" data-route="my-feedback" href="#/my-feedback" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 7.5l1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3 1-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <span class="nav-label">My Feedback</span>
       </a>
       <a class="nav-item" data-route="home" href="#/home" title="Home" id="navHome">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
@@ -843,7 +977,7 @@ tr.row-new td{background:var(--primary-light)!important}
             </button>
             <button class="role-item" data-role="student">
               <span class="avatar" style="background:var(--teal-light);color:var(--teal)">SN</span>
-              <span><span class="role-item-name">Sofia Nguyen</span><span class="role-item-sub">Student · her own dashboard only</span></span>
+              <span><span class="role-item-name">Sofia Nguyen</span><span class="role-item-sub">Student · student experience</span></span>
             </button>
             <div style="border-top:1px solid var(--n200);margin:6px 4px"></div>
             <button class="role-item" id="signOutBtn">
@@ -1375,6 +1509,7 @@ const ROLES = {
   }
 };
 const STUDENT_SELF_ID = 4; /* Sofia Nguyen — provisional persona pending Tyler G-answers */
+const STUDENT_ROUTES = new Set(["my-dashboard","my-durable-skills","my-credentials","my-interests","my-feedback","student-welcome","student-assessment"]);
 /* Student dashboard content (from Tyler's July 17 design; wording pending G1/G3) */
 const SD_DEFS = {
   "Self-Management": "Manages emotions, goals, and personal well-being.",
@@ -2622,22 +2757,20 @@ const SD_LEGEND_ICONS = [
   '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l2.5 5.2 5.7.7-4.2 3.9 1.1 5.6L12 16l-5.1 2.9 1.1-5.6-4.2-3.9 5.7-.7L12 3.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>'
 ];
-function viewStudentDashboard(){
+/* ================= STUDENT EXPERIENCE (Tyler flow doc 2026-08-06 — added outside revision rounds) ================= */
+
+/* -- shared student header card -- */
+const CRED_SHARES = { "Teamwork": 0.24, "Communication": 0.22, "Self-Management": 0.20, "Adaptability": 0.18, "Creativity": 0.16 };
+let ciDone = false;   /* teacher check-in completed this session */
+let ciBonus = 0;      /* points earned from the check-in */
+function stuCredTotal(){ return getStudent(STUDENT_SELF_ID).credPts + ciBonus; }
+function sdHeadCard(){
   const s = getStudent(STUDENT_SELF_ID);
-  const CRED_SHARES = { "Teamwork": 0.24, "Communication": 0.22, "Self-Management": 0.20, "Adaptability": 0.18, "Creativity": 0.16 };
   const cred = [["Teamwork"], ["Adaptability"], ["Communication"]].map(([c]) => {
-    const v = Math.round(s.credPts * CRED_SHARES[c]);
+    const v = Math.round(stuCredTotal() * CRED_SHARES[c]);
     return [c, v, v >= 50 ? "var(--risk-low-fg)" : "#C05621"];
   });
-  const ticks = [50, 65, 80, 90];
   return `
-  <div class="page-head">
-    <div>
-      <h1 class="page-title">My Dashboard</h1>
-      <p class="page-sub">Hi Sofia! Here's how your skills are growing. Nothing here is a test or a grade.</p>
-    </div>
-  </div>
-
   <div class="card sd-head">
     <div class="col">
       <div class="sd-avatar">${s.initials}</div>
@@ -2658,8 +2791,63 @@ function viewStudentDashboard(){
       <div class="sd-sec-title">Portrait of a Graduate</div>
       ${pofgWheel()}
     </div>
-  </div>
+  </div>`;
+}
 
+/* -- My Dashboard: student hub (Tyler flow, "call to action" cards) -- */
+function viewStudentDashboard(){
+  const cards = [
+    ["my-durable-skills", "var(--teal-light)", "var(--teal)", "My Durable Skills", "Explore your skills, see your growth, and track progress."],
+    ["my-credentials", "var(--primary-light)", "var(--primary)", "My Credentials", "View your earned credentials and track what's next."],
+    ["my-interests", "var(--orange-light)", "#C05621", "My Interests", "Discover your interests and explore future possibilities."],
+    ["my-feedback", "var(--primary-light)", "var(--primary)", "My Feedback", "See feedback from teachers and reflect on your growth."]
+  ];
+  const cta = saState.complete
+    ? `<div class="sdh-cta" data-nav="#/my-durable-skills">
+        <div><div class="sdh-cta-title">Your durable skills summary is complete</div>
+        <div class="sdh-cta-sub">Congratulations! Open My Durable Skills to see your latest summary report.</div></div>
+        <span class="go">View summary</span></div>`
+    : `<div class="sdh-cta" data-nav="#/student-assessment">
+        <div><div class="sdh-cta-title">Click here to continue creating your durable skills summary</div>
+        <div class="sdh-cta-sub">You'll pick up right where you left off — Section 1, October 2026 cycle.</div></div>
+        <span class="go">Continue</span></div>`;
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">My Dashboard</h1>
+      <p class="page-sub">Hi Sofia! Here's how your skills are growing. Nothing here is a test or a grade.</p>
+    </div>
+  </div>
+  ${sdHeadCard()}
+  ${cta}
+  <div class="sdh-grid">
+    ${cards.map(([route, bg, fg, name, sub]) => `
+    <div class="sdh-card" data-nav="#/${route}">
+      <div class="sdh-icon" style="background:${bg};color:${fg}">${SD_ICONS[{"my-durable-skills":"Self-Management","my-credentials":"Teamwork","my-interests":"Creativity","my-feedback":"Communication"}[route]]}</div>
+      <div class="sdh-name" style="color:${fg}">${name}</div>
+      <div class="sdh-sub">${sub}</div>
+    </div>`).join("")}
+  </div>`;
+}
+
+/* -- My Durable Skills: summary report with cycle selector (was the single student screen) -- */
+let sdCycleSel = "May 2026";
+const SD_CYCLE_DELTAS = { "May 2026": [0,0,0,0,0], "October 2025": [-5,-4,-6,-3,-5] };
+function viewMyDurableSkills(){
+  const s = getStudent(STUDENT_SELF_ID);
+  const deltas = SD_CYCLE_DELTAS[sdCycleSel];
+  const ticks = [50, 65, 80, 90];
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">My Durable Skills</h1>
+      <p class="page-sub">Your skills summary report. The newest assessment always shows first.</p>
+    </div>
+    <select class="filter-select" id="sdCycle" style="margin-top:6px">
+      ${Object.keys(SD_CYCLE_DELTAS).map(c => `<option${c === sdCycleSel ? " selected" : ""}>${c}</option>`).join("")}
+    </select>
+  </div>
+  ${sdHeadCard()}
   <div class="card sd-legend">
     ${SD_RANGES.map(([n, d, bg, fg], i) => `
     <div class="sd-legend-item">
@@ -2667,15 +2855,14 @@ function viewStudentDashboard(){
       <span><span class="sd-legend-name">${n}</span><br><span class="sd-legend-def">${d}</span></span>
     </div>`).join("")}
   </div>
-
   <div class="card" style="padding:8px 0">
-    ${COMPS.map(c => {
-      const v = s.scores[c];
+    ${COMPS.map((c, ci) => {
+      const v = Math.max(5, s.scores[c] + deltas[ci]);
       return `
     <div class="sd-comp-row">
       <div class="sd-comp-id">
         <span class="sd-comp-icon">${SD_ICONS[c]}</span>
-        <span><span class="sd-comp-name">${c}</span><br><span class="sd-comp-def">${SD_DEFS[c]}</span></span>
+        <span><span class="sd-comp-name">${c}<span class="i-dot" title="${SD_DEFS[c]}">i</span></span><br><span class="sd-comp-def">${SD_DEFS[c]}</span></span>
       </div>
       <div>
         <div class="sd-track">
@@ -2689,6 +2876,529 @@ function viewStudentDashboard(){
     }).join("")}
   </div>
   <p class="section-hint" style="margin-top:14px">Your skills grow every time you practice them — in class, in clubs, and with your teams. Keep going!</p>`;
+}
+
+/* -- Welcome landing (custom-link arrival) -- */
+function viewStudentWelcome(){
+  return `
+  <div class="sa-card">
+    <div class="page-head"><div>
+      <h1 class="page-title">Welcome to Student EI</h1>
+      <p class="page-sub">Thank you for creating your Student EI Dashboard!</p>
+    </div></div>
+    <div class="card section-card">
+      <div class="sw-point"><span class="sw-point-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <span>You're about to complete a series of questions that will help identify your <b>durable skills</b> and build your <b>Graduate Profile</b>. There are no right or wrong answers — just answer honestly based on who you are today. This isn't about your GPA or report card. It's about helping you better understand yourself and prepare for your future.</span></div>
+      <div class="sw-point"><span class="sw-point-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5l6 3.5-6 3.5v-7z" fill="currentColor"/></svg></span>
+        <span>Before you begin, watch this short <b>2-minute video</b> to learn what durable skills are, why they matter, and how they can help you succeed in school, future careers, and life with your friends and family.</span></div>
+      <div class="sw-point"><span class="sw-point-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 19c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 6.5a3 3 0 010 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span>Ask your teacher whether you should complete all of the sections today or spread them out over the next several days.</span></div>
+      <div class="sw-video" id="swVideo">
+        <div class="sw-video-title">What Are Durable Skills?</div>
+        <div class="sw-video-sub">Why They Matter and How They Shape Your Future</div>
+        <span class="sw-play"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5.5l11 6.5-11 6.5v-13z" fill="currentColor"/></svg></span>
+        <div class="sw-bar">0:00 / 2:00</div>
+      </div>
+      <div class="sa-actions">
+        <span class="sa-demo">Remember: there are no right or wrong answers. Be honest and think about who you are today.</span>
+        <button class="btn-primary" id="swNext" style="width:auto;padding:11px 26px">Next</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* -- Assessment: 3 sections, 3 formats, stop-sign breaks, no back button -- */
+const SA_SECTIONS = [
+  { total: 32, type: "likert" },
+  { total: 30, type: "triad" },
+  { total: 30, type: "sj" }
+];
+const SA_LIKERT = [
+  ["Reliable", "(Dependable, Responsible)"],
+  ["Organized", "(Orderly, Tidy)"],
+  ["Cheerful", "(Happy, Joyful)"],
+  ["Hardworking", "(Diligent, Persistent)"]
+];
+const SA_OPTS = ["Never","Rarely","Sometimes","Often","Usually","Always"];
+const SA_TRIADS = [
+  ["I am a kind person","I am open to new ideas and experiences","I tend to laugh a lot with friends and family"],
+  ["I stay calm when plans change suddenly","I like to organize group projects","I come up with unusual ideas"],
+  ["I finish what I start","I ask questions when I do not understand","I enjoy helping classmates succeed"]
+];
+const SA_SJ_SCENARIO = "You are buried: multiple final exams, a term paper, and an important track meet (you are Captain) are all scheduled for next week. You have responsibilities to your coach and team but it's imperative you keep up your grades — you are also applying to colleges.";
+const SA_SJ_STMTS = [
+  "Stick to what you know and follow the same practice and study habits. Routine keeps you grounded and now is not the time to make changes.",
+  "Talk with your coach and teachers, map every commitment on a calendar, and build a plan that protects both the meet and your exams."
+];
+const SA_SJ_OPTS = ["Very Unlikely","Unlikely","May or May Not","Likely","Very Likely"];
+function saSamples(sec){ return sec === 0 ? SA_LIKERT.length : sec === 1 ? SA_TRIADS.length : SA_SJ_STMTS.length; }
+/* Sofia's October 2026 cycle is mid-Section 1 — the flow doc's "left off on question 22" case. */
+let saState = { section: 0, q: 3, phase: "question", started: true, complete: false };
+let saAnswer = null;
+let saTriad = { most: null, least: null };
+
+function saFill(i){
+  if (saState.complete) return 100;
+  if (i < saState.section) return 100;
+  if (i > saState.section) return 0;
+  if (saState.phase === "break") return 100;
+  return Math.round(saState.q / saSamples(i) * 100);
+}
+function saProgress(){
+  return `<div class="sa-progress">${SA_SECTIONS.map((s, i) =>
+    `<span class="sa-seg"><span class="sa-seg-fill" style="width:${saFill(i)}%"></span></span>`).join("")}</div>`;
+}
+function saDemoJump(){
+  return `<span class="sa-demo">Demo: jump to
+    <button data-sa-jump="1">Section 2</button> ·
+    <button data-sa-jump="2">Section 3</button> ·
+    <button data-sa-jump="done">Congratulations</button></span>`;
+}
+function viewStudentAssessment(){
+  if (!saState.started) { saState = { section: 0, q: 0, phase: "question", started: true, complete: false }; }
+  if (saState.complete || saState.phase === "congrats") return saCongrats();
+  if (saState.phase === "break") return saBreak();
+  const sec = saState.section, q = saState.q, t = SA_SECTIONS[sec].type;
+  let body = "";
+  if (t === "likert") {
+    const [word, sub] = SA_LIKERT[q % SA_LIKERT.length];
+    body = `
+    <div class="sa-qhead">
+      <span class="sa-qicon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 19.5c0-3.2 2.9-5.3 6.5-5.3s6.5 2.1 6.5 5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+      <div class="sa-kicker">Section 1 · About Me</div>
+      <div class="sa-qtitle">Thinking about myself I tend to be:</div>
+      <div class="sa-word" style="margin-top:10px">${word} <small>${sub}</small></div>
+    </div>
+    <div class="sa-opts">
+      ${SA_OPTS.map((o, i) => `<span class="sa-opt${saAnswer === i ? " sel" : ""}" data-sa-opt="${i}">${o}</span>`).join("")}
+    </div>`;
+  } else if (t === "triad") {
+    const stmts = SA_TRIADS[q % SA_TRIADS.length];
+    body = `
+    <div class="sa-qhead">
+      <span class="sa-qicon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></span>
+      <div class="sa-kicker">Section 2 · Most and Least Like Me</div>
+      <div class="sa-qtitle">Select the statement that describes you <u>MOST</u> accurately,<br>and the statement that describes you <u>LEAST</u> accurately.</div>
+      <div class="sa-qsub">The unchosen statement stays in place and still counts.</div>
+    </div>
+    ${stmts.map((s, i) => `
+    <div class="sa-stmt">${s}
+      <span class="tl">
+        <button class="sa-tl-btn most${saTriad.most === i ? " on" : ""}" data-sa-most="${i}">Most like me</button>
+        <button class="sa-tl-btn least${saTriad.least === i ? " on" : ""}" data-sa-least="${i}">Least like me</button>
+      </span>
+    </div>`).join("")}`;
+  } else {
+    body = `
+    <div class="sa-qhead">
+      <span class="sa-qicon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="4" width="14" height="17" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M9 4V3h6v1" stroke="currentColor" stroke-width="1.8"/></svg></span>
+      <div class="sa-kicker">Section 3 · Situations</div>
+    </div>
+    <div class="sa-scenario">${SA_SJ_SCENARIO}</div>
+    <div class="sa-qtitle" style="text-align:center;font-size:17px;background:var(--primary);color:#fff;border-radius:var(--r-md);padding:11px 14px;margin-bottom:12px">How would you respond in this situation?</div>
+    <p style="text-align:center;font-size:15px;color:var(--n900);line-height:1.55;margin-bottom:14px">${SA_SJ_STMTS[q % SA_SJ_STMTS.length]}</p>
+    <div class="sa-opts" style="border-top:none;padding-top:0">
+      ${SA_SJ_OPTS.map((o, i) => `<span class="sa-opt${saAnswer === i ? " sel" : ""}" data-sa-opt="${i}">${o}</span>`).join("")}
+    </div>`;
+  }
+  const answered = t === "triad"
+    ? (saTriad.most != null && saTriad.least != null && saTriad.most !== saTriad.least)
+    : saAnswer != null;
+  return `
+  ${saProgress()}
+  <div class="card sa-card section-card">
+    ${body}
+    <div class="sa-actions">
+      ${saDemoJump()}
+      ${t === "triad" ? `<button class="filter-select" id="saClear" style="cursor:pointer">Clear</button>` : ""}
+      <button class="btn-primary" id="saNext" style="width:auto;padding:11px 26px;${answered ? "" : "opacity:.45;pointer-events:none"}">Next Question →</button>
+    </div>
+  </div>
+  <p class="section-hint" style="text-align:center;margin-top:12px">There is no back button — answer each question, then click Next. The full assessment is 92 questions in three sections (32, 30, 30); this demo shows a sample of each format.</p>`;
+}
+function saBreak(){
+  const nextSec = saState.section + 2;
+  return `
+  ${saProgress()}
+  <div class="card sa-card section-card" style="text-align:center;padding:38px 24px">
+    <div class="sa-stop">STOP</div>
+    <div class="sa-qtitle">Nice work — you've finished Section ${saState.section + 1}.</div>
+    <p class="sa-qsub" style="max-width:480px;margin:10px auto 20px">Ask your teacher if you should proceed to the next section or continue later in the week. Your answers are saved either way.</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="filter-select" id="saLater" style="cursor:pointer">Save and finish later</button>
+      <button class="btn-primary" id="saContinue" style="width:auto;padding:11px 26px">Continue to Section ${nextSec}</button>
+    </div>
+  </div>`;
+}
+function saCongrats(){
+  return `
+  ${saProgress()}
+  <div class="card sa-card section-card" style="text-align:center;padding:38px 24px">
+    <div class="sa-qicon" style="width:74px;height:74px;background:var(--risk-low-bg);color:var(--risk-low-fg)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sa-qtitle" style="margin-top:12px">Congratulations, you've completed your durable skills summary.</div>
+    <p class="sa-qsub" style="max-width:460px;margin:10px auto 20px">Please click "My Dashboard" to see your summary report.</p>
+    <button class="btn-primary" id="saDone" style="width:auto;padding:11px 30px">My Dashboard</button>
+  </div>`;
+}
+
+/* -- My Credentials -- */
+let ciOpen = false, ciStep = 0;
+const CI_QS = [
+  ["During the chemistry lab, how did you divide the work in your group?",
+   ["We talked it through and split roles so everyone had a part","One person did most of it","We didn't really plan it"]],
+  ["When your first measurement looked wrong, what did you do?",
+   ["Rechecked the setup and asked the group before redoing it","Started over without discussing it","Recorded it anyway"]],
+  ["How did you share your group's results with the class?",
+   ["Summarized the findings and answered questions clearly","Read the numbers off the sheet","A teammate presented for us"]]
+];
+function viewMyCredentials(){
+  const total = stuCredTotal();
+  const goal = 375, max = 500;
+  const pct = Math.round(total / max * 100);
+  let ciCard = "";
+  if (ciDone) {
+    ciCard = `<div class="ci-banner" style="background:var(--risk-low-bg);border-color:var(--success)">
+      <span style="color:var(--risk-low-fg)">${SD_ICONS["Teamwork"]}</span>
+      <div style="font-size:14px;color:var(--n900)"><b>Chemistry Lab Check-In complete.</b> +${ciBonus} points were added to your credential total in real time — Teamwork +8, Communication +6, Self-Management +4.</div>
+    </div>`;
+  } else if (ciOpen) {
+    const [qText, opts] = CI_QS[ciStep];
+    ciCard = `<div class="card section-card">
+      <div class="section-head"><h2 class="section-title">Chemistry Lab — Durable Skills Check-In</h2>
+      <span class="section-hint">From Ms. Jones · one time only · question ${ciStep + 1} of ${CI_QS.length}</span></div>
+      <p style="font-size:15px;color:var(--n900);margin-bottom:12px"><b>${qText}</b></p>
+      ${opts.map((o, i) => `<div class="sa-stmt" data-ci-opt="${i}" style="cursor:pointer">${o}</div>`).join("")}
+    </div>`;
+  } else {
+    ciCard = `<div class="ci-banner">
+      <span class="stu-badge" style="margin-left:0">1</span>
+      <div style="font-size:14px;color:var(--n900)"><b>You have a new Check-In from Ms. Jones — Chemistry Lab.</b><br>
+      <span style="color:var(--n500);font-size:13px">Answer a few questions about last week's lab. Correct answers add to your credential total in real time. You can take it one time.</span></div>
+      <button class="btn-primary" id="ciStart" style="width:auto;margin-left:auto;padding:9px 18px;flex:none">Open Check-In</button>
+    </div>`;
+  }
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">My Credentials</h1>
+      <p class="page-sub">Every experience counts — in class, in clubs, at work, and at home.</p>
+    </div>
+  </div>
+  ${ciCard}
+  <div class="card section-card">
+    <div class="section-head"><h2 class="section-title">Credential Completion Overview</h2>
+    <span class="section-hint">District goal: ${goal} of ${max} points</span></div>
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+      <span style="font-size:30px;font-weight:700;color:var(--primary)">${total}</span>
+      <span style="font-size:14px;color:var(--n500)">of ${max} points · ${pct}% — you're making great progress! Keep building your skills and watch your future take shape.</span>
+    </div>
+    <div class="sd-track">
+      <div class="sd-fill" style="width:${pct}%"></div>
+      <span class="sd-tick" style="left:${Math.round(goal / max * 100)}%"></span>
+      <span class="sd-marker" style="left:${pct}%"></span>
+    </div>
+  </div>
+  <div class="mc-grid">
+    ${COMPS.map(c => {
+      const v = Math.round(stuCredTotal() * CRED_SHARES[c]);
+      return `
+    <div class="mc-card">
+      <span class="mc-icon" style="background:var(--primary-light);color:var(--primary)">${SD_ICONS[c]}</span>
+      <div style="font-weight:700;font-size:15px;margin-bottom:6px">${c}</div>
+      <div class="mc-track"><div class="mc-fill" style="width:${Math.round(v / (max * CRED_SHARES[c]) * 100)}%"></div></div>
+      <div class="mc-val">${v} <small>/ ${Math.round(max * CRED_SHARES[c])}</small></div>
+      <div class="sdh-sub" style="margin-top:6px">${SD_DEFS[c]}</div>
+    </div>`;
+    }).join("")}
+  </div>
+  <div class="card section-card" style="margin-top:14px">
+    <div class="section-head"><h2 class="section-title">Add your experiences</h2></div>
+    <p style="font-size:14px;color:var(--n700);line-height:1.6">Captain of a team? Summer job? Volunteering? Add experiences in and out of school under <a href="#/my-feedback" style="color:var(--primary);font-weight:600">My Feedback</a> — they're automatically matched to the right competencies and add to your credential total.</p>
+  </div>`;
+}
+
+/* -- My Interests: 3-step wizard -- */
+const MI_EDU = ["Done with school","Trade School / Apprenticeship","Military Service and Training","Community College","University or College","Other"];
+const MI_WORK = ["Work outside","Work inside","Work remote","Work hybrid","Work in the field","Work at a desk/office"];
+const MI_LIKES = {
+  "Sports": ["Archery","Baseball","Basketball","Cheerleading","Cross Country","Dance","Soccer","Swimming"],
+  "Outdoors": ["Bird Watching","Camping","Fishing","Gardening","Hiking","Kayaking","Nature Photography","Rock Climbing"],
+  "Clubs and Organizations": ["Art Club","Debate Team","Drama Club","Environmental Club","National Honor Society","Robotics Club","Student Council","Yearbook / School Newspaper"]
+};
+let miState = { step: 0, edu: [], work: [], verts: [], jobs: [], likes: [], done: false };
+function miToggle(list, val, limit, label){
+  const i = list.indexOf(val);
+  if (i >= 0) { list.splice(i, 1); return; }
+  if (limit && list.length >= limit) { showToast(label); return; }
+  list.push(val);
+}
+function miProgress(){
+  return `<div class="sa-progress" style="max-width:100%">${[0,1,2].map(i =>
+    `<span class="sa-seg"><span class="sa-seg-fill" style="width:${miState.step > i || miState.done ? 100 : miState.step === i ? 40 : 0}%"></span></span>`).join("")}</div>`;
+}
+function miCheck(group, val, sel){
+  return `<div class="mi-item${sel ? " sel" : ""}" data-mi-group="${group}" data-mi-val="${val.replace(/"/g, "&quot;")}">
+    <span class="mi-box">${sel ? "✓" : ""}</span>${val}</div>`;
+}
+function viewMyInterests(){
+  let body = "", head = "", sub = "";
+  if (miState.done) {
+    head = "My Interests"; sub = "Your selections shape the career pathways Student EI suggests for you.";
+    body = `
+    <div class="card section-card">
+      <div class="section-head"><h2 class="section-title">Your interest profile</h2>
+      <button class="filter-select" id="miRestart" style="cursor:pointer">Update my interests</button></div>
+      <p class="section-hint" style="margin-bottom:6px">After high school</p>
+      <div>${miState.edu.map(v => `<span class="chip-sel">${v}</span>`).join("") || '<span class="section-hint">No selections yet</span>'}</div>
+      <p class="section-hint" style="margin:10px 0 6px">Work environment</p>
+      <div>${miState.work.map(v => `<span class="chip-sel">${v}</span>`).join("") || '<span class="section-hint">No selections yet</span>'}</div>
+      <p class="section-hint" style="margin:10px 0 6px">Career interests</p>
+      <div>${miState.jobs.map(v => `<span class="chip-sel">${v}</span>`).join("") || '<span class="section-hint">No selections yet</span>'}</div>
+      <p class="section-hint" style="margin:10px 0 6px">Things I like</p>
+      <div>${miState.likes.map(v => `<span class="chip-sel">${v}</span>`).join("") || '<span class="section-hint">No selections yet</span>'}</div>
+    </div>
+    <p class="section-hint" style="margin-top:12px">Your interests tie into career pathways and Career and Technical Education courses at your school. They also power the matches your teachers and counselors see.</p>`;
+  } else if (miState.step === 0) {
+    head = "Student Interest Pathways"; sub = "Pick all the ones that sound like you.";
+    body = `
+    <div class="mi-cols" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+      <div class="mi-col">
+        <div class="mi-col-head"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3L2 8l10 5 10-5-10-5z" stroke="var(--primary)" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 11v5c0 1.5 3.1 3 7 3s7-1.5 7-3v-5" stroke="var(--primary)" stroke-width="1.6" fill="none"/></svg> Continuing Education</div>
+        ${MI_EDU.map(v => miCheck("edu", v, miState.edu.includes(v))).join("")}
+      </div>
+      <div class="mi-col">
+        <div class="mi-col-head"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="2" stroke="var(--primary)" stroke-width="1.7"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2" stroke="var(--primary)" stroke-width="1.7"/></svg> Work Environment</div>
+        ${MI_WORK.map(v => miCheck("work", v, miState.work.includes(v))).join("")}
+      </div>
+    </div>`;
+  } else if (miState.step === 1) {
+    head = "Career Interest Areas"; sub = "Narrow it down: choose up to two career areas, then up to three careers that interest you.";
+    const verts = VERTICALS.filter(v => v.jobs).slice().sort((a, b) => a.name.localeCompare(b.name));
+    body = `
+    <div class="mi-cols">
+      ${verts.map(v => {
+        const vSel = miState.verts.includes(v.name);
+        return `
+      <div class="mi-col" style="${vSel ? "border-color:var(--primary)" : ""}">
+        <div class="mi-col-head" data-mi-vert="${v.name}" style="cursor:pointer">
+          <span class="mi-box${vSel ? "" : ""}" style="${vSel ? "background:var(--primary);border-color:var(--primary)" : ""}">${vSel ? "✓" : ""}</span>${v.name}
+        </div>
+        ${v.jobs.slice(0, 6).map(j => miCheck("jobs", j.job, miState.jobs.includes(j.job))).join("")}
+      </div>`;
+      }).join("")}
+    </div>`;
+  } else {
+    head = "Things I am interested in."; sub = "Select any that you like — hobbies, sports, clubs, anything.";
+    body = `
+    <div class="mi-cols">
+      ${Object.entries(MI_LIKES).map(([grp, items]) => `
+      <div class="mi-col">
+        <div class="mi-col-head">${grp}</div>
+        ${items.map(v => miCheck("likes", v, miState.likes.includes(v))).join("")}
+      </div>`).join("")}
+    </div>`;
+  }
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">${head}</h1>
+      <p class="page-sub">${sub}</p>
+    </div>
+  </div>
+  ${miState.done ? "" : miProgress()}
+  ${body}
+  ${miState.done ? "" : `
+  <div class="sa-actions" style="border-top:none">
+    <span class="sa-demo">You can also tell MAV what you like — it matches interests to career pathways.</span>
+    <button class="btn-primary" id="miNext" style="width:auto;padding:11px 26px">${miState.step === 2 ? "Finish" : "Next"}</button>
+  </div>`}`;
+}
+
+/* -- My Feedback -- */
+function viewMyFeedback(){
+  const people = [["Teachers"],["Coaches"],["Bosses"],["Parents and Guardians"],["Grandparents"],["Mentors"]];
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">My Feedback</h1>
+      <p class="page-sub">Feedback that helps you grow — from the people who know you best.</p>
+    </div>
+  </div>
+  <div class="card section-card">
+    <div class="mf-hero">
+      <span class="mf-mic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21M8.5 21h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+      <div class="sa-qtitle">Share feedback that helps you grow.</div>
+      <p class="sa-qsub" style="max-width:520px;margin:8px auto 0">Feedback builds a more complete picture of your durable skills and adds to your credential progress.</p>
+    </div>
+    <div class="mf-people">
+      ${people.map(([p]) => `
+      <div class="mf-person"><span class="av"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c0-3.2 3.1-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>${p}</div>`).join("")}
+    </div>
+  </div>
+  <div class="mi-cols" style="margin-top:14px">
+    <div class="mi-col">
+      <div class="mi-col-head"><span class="stu-badge" style="margin-left:0;background:var(--primary)">1</span> Add your own experiences</div>
+      <p style="font-size:13.5px;color:var(--n700);line-height:1.6;margin-bottom:10px">"I am captain of the cheerleading team..." "I work a summer job at the ice cream window..." Type it or say it — your activities are matched to the right competencies and add to your credential total.</p>
+      <button class="btn-primary" id="mfMic" style="width:auto;padding:9px 16px;font-size:13.5px">🎙 Record with your voice</button>
+    </div>
+    <div class="mi-col">
+      <div class="mi-col-head"><span class="stu-badge" style="margin-left:0;background:var(--teal)">2</span> Hand your device to a trusted adult</div>
+      <p style="font-size:13.5px;color:var(--n700);line-height:1.6">Log in on your school-issued device, tap the mic, and let a parent, guardian, coach, or mentor share their feedback. They never get access to your dashboard or personal information.</p>
+    </div>
+    <div class="mi-col">
+      <div class="mi-col-head"><span class="stu-badge" style="margin-left:0;background:#5B4FC8">3</span> Feedback adds value</div>
+      <p style="font-size:13.5px;color:var(--n700);line-height:1.6">All feedback is reviewed and added to your profile to highlight your strengths and support your growth. Can't use a device? Feedback can also be submitted via email or PDF form through your school or district.</p>
+    </div>
+  </div>
+  <p class="section-hint" style="margin-top:12px">Have questions? Contact your school to learn how feedback works at your district.</p>`;
+}
+
+/* -- Student registration overlay (custom-link flow) -- */
+let regStep = 0;
+function renderReg(){
+  document.getElementById("regBrand").innerHTML = document.querySelector("#signon .signon-brand").innerHTML;
+  const body = document.getElementById("regBody");
+  if (regStep === 0) {
+    body.innerHTML = `
+    <div class="reg-link-chip">You arrived from your district's link: delmarcsd.org/jasperMS/skillsassessment/October2026</div>
+    <div class="signon-title" style="font-size:26px">Getting Started</div>
+    <div class="signon-sub">Please register with your school email address.</div>
+    <div class="reg-row">
+      <div class="field"><label>First Name</label><input type="text" value="Sofia" readonly></div>
+      <div class="field"><label>Last Name</label><input type="text" value="Nguyen" readonly></div>
+    </div>
+    <div class="field"><label>Email</label><input type="text" value="s.nguyen@student.delmarcsd.org" readonly>
+      <div class="signon-error" style="color:var(--n500)">Only your district email address is eligible to create your account.</div></div>
+    <div class="field"><label>High School Graduation Year</label><input type="text" value="2028" readonly></div>
+    <button class="btn-primary" id="regContinue">Continue</button>
+    <div class="reg-alt">Already have an account? <a id="regToSignon">Sign in</a> · Or use single sign-on with Google, Clever, or ClassLink</div>`;
+    document.getElementById("regContinue").addEventListener("click", () => { regStep = 1; renderReg(); });
+  } else if (regStep === 1) {
+    body.innerHTML = `
+    <div class="signon-title" style="font-size:26px;text-align:center">Almost Complete!</div>
+    <div style="text-align:center;margin:10px 0"><svg width="40" height="40" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="var(--primary)" stroke-width="1.8"/><path d="M3.5 6.5L12 13l8.5-6.5" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    <div class="signon-sub" style="text-align:center">We've sent an email to<br><b style="color:var(--n900);font-size:15px">s.nguyen@student.delmarcsd.org</b><br><br>Please follow the link in your inbox to verify your account before logging in.</div>
+    <div class="reg-mail">
+      <div class="reg-mail-tag">District inbox preview</div>
+      <p style="font-size:13.5px;color:var(--n700);line-height:1.6">Thanks for registering at Student EI!<br>In order to use your account, please verify your email address.</p>
+      <button class="reg-verify" id="regVerify">VERIFY EMAIL</button>
+      <p style="font-size:12.5px;color:var(--n500)">Thanks for using Student EI!<br>The Student EI Team</p>
+    </div>
+    <div class="reg-alt"><a id="regToSignon">Back to sign in</a></div>`;
+    document.getElementById("regVerify").addEventListener("click", () => { regStep = 2; renderReg(); });
+  } else {
+    body.innerHTML = `
+    <div class="signon-title" style="font-size:26px;text-align:center">Create Password</div>
+    <div class="field" style="margin-top:14px"><label>Password</label><input type="password" id="regPw" placeholder="Password"></div>
+    <ul class="pw-req">
+      <li id="pwLen"><span class="ck">✓</span> At least 8 characters</li>
+      <li id="pwNum"><span class="ck">✓</span> Contains one number</li>
+      <li id="pwUp"><span class="ck">✓</span> Contains one uppercase letter</li>
+    </ul>
+    <div class="field"><label>Confirm Password</label><input type="password" id="regPw2" placeholder="Confirm Password"></div>
+    <button class="btn-primary" id="regFinish" style="opacity:.45;pointer-events:none">Finish Registration</button>
+    <div class="reg-alt"><a id="regFill">Demo: fill a valid password</a> · <a id="regToSignon">Back to sign in</a></div>`;
+    const pw = document.getElementById("regPw"), pw2 = document.getElementById("regPw2");
+    const check = () => {
+      const v = pw.value;
+      const okLen = v.length >= 8, okNum = /\d/.test(v), okUp = /[A-Z]/.test(v);
+      document.getElementById("pwLen").classList.toggle("ok", okLen);
+      document.getElementById("pwNum").classList.toggle("ok", okNum);
+      document.getElementById("pwUp").classList.toggle("ok", okUp);
+      const ready = okLen && okNum && okUp && pw2.value === v;
+      const btn = document.getElementById("regFinish");
+      btn.style.opacity = ready ? "1" : ".45";
+      btn.style.pointerEvents = ready ? "auto" : "none";
+    };
+    pw.addEventListener("input", check); pw2.addEventListener("input", check);
+    document.getElementById("regFill").addEventListener("click", () => { pw.value = "Delmar2026"; pw2.value = "Delmar2026"; check(); });
+    document.getElementById("regFinish").addEventListener("click", () => {
+      setAuthenticated(true);
+      saState = { section: 0, q: 0, phase: "question", started: false, complete: false };
+      applyRole("student");
+      location.hash = "#/student-welcome";
+    });
+  }
+  body.querySelectorAll("#regToSignon").forEach(el =>
+    el.addEventListener("click", () => { regStep = 0; location.hash = "#/signon"; }));
+}
+
+/* -- wiring for student views (called from wireView) -- */
+function saAdvance(){
+  const sec = saState.section;
+  saAnswer = null; saTriad = { most: null, least: null };
+  if (saState.q + 1 >= saSamples(sec)) {
+    if (sec >= SA_SECTIONS.length - 1) { saState.phase = "congrats"; saState.complete = true; }
+    else { saState.phase = "break"; }
+  } else { saState.q += 1; }
+  render();
+}
+function wireStudentViews(){
+  const on = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
+  /* welcome */
+  on("swVideo", () => showToast("The 2-minute durable skills video plays here in the full product"));
+  on("swNext", () => { location.hash = "#/student-assessment"; });
+  /* assessment */
+  document.querySelectorAll("[data-sa-opt]").forEach(el =>
+    el.addEventListener("click", () => { saAnswer = Number(el.dataset.saOpt); render(); }));
+  document.querySelectorAll("[data-sa-most]").forEach(el =>
+    el.addEventListener("click", () => {
+      const i = Number(el.dataset.saMost);
+      saTriad.most = saTriad.most === i ? null : i;
+      if (saTriad.least === i) saTriad.least = null;
+      render();
+    }));
+  document.querySelectorAll("[data-sa-least]").forEach(el =>
+    el.addEventListener("click", () => {
+      const i = Number(el.dataset.saLeast);
+      saTriad.least = saTriad.least === i ? null : i;
+      if (saTriad.most === i) saTriad.most = null;
+      render();
+    }));
+  document.querySelectorAll("[data-sa-jump]").forEach(el =>
+    el.addEventListener("click", () => {
+      const j = el.dataset.saJump;
+      saAnswer = null; saTriad = { most: null, least: null };
+      if (j === "done") { saState.phase = "congrats"; saState.complete = true; }
+      else { saState.section = Number(j); saState.q = 0; saState.phase = "question"; }
+      render();
+    }));
+  on("saNext", saAdvance);
+  on("saClear", () => { saTriad = { most: null, least: null }; render(); });
+  on("saContinue", () => { saState.section += 1; saState.q = 0; saState.phase = "question"; render(); });
+  on("saLater", () => { location.hash = "#/my-dashboard"; });
+  on("saDone", () => { sdCycleSel = "May 2026"; location.hash = "#/my-durable-skills"; });
+  /* durable skills cycle */
+  const cyc = document.getElementById("sdCycle");
+  if (cyc) cyc.addEventListener("change", () => { sdCycleSel = cyc.value; render(); });
+  /* credentials check-in */
+  on("ciStart", () => { ciOpen = true; ciStep = 0; render(); });
+  document.querySelectorAll("[data-ci-opt]").forEach(el =>
+    el.addEventListener("click", () => {
+      if (ciStep + 1 >= CI_QS.length) {
+        ciDone = true; ciOpen = false; ciBonus = 18;
+        const badge = document.getElementById("credBadge");
+        if (badge) badge.hidden = true;
+        showToast("Check-In complete — +18 credential points added");
+      } else { ciStep += 1; }
+      render();
+    }));
+  /* interests */
+  document.querySelectorAll("[data-mi-group]").forEach(el =>
+    el.addEventListener("click", () => {
+      const g = el.dataset.miGroup, v = el.dataset.miVal;
+      if (g === "edu") miToggle(miState.edu, v);
+      else if (g === "work") miToggle(miState.work, v);
+      else if (g === "jobs") miToggle(miState.jobs, v, 3, "Choose up to three careers — unselect one first");
+      else if (g === "likes") miToggle(miState.likes, v);
+      render();
+    }));
+  document.querySelectorAll("[data-mi-vert]").forEach(el =>
+    el.addEventListener("click", () => { miToggle(miState.verts, el.dataset.miVert, 2, "Choose up to two career areas — unselect one first"); render(); }));
+  on("miNext", () => { if (miState.step >= 2) { miState.done = true; } else { miState.step += 1; } render(); });
+  on("miRestart", () => { miState.done = false; miState.step = 0; render(); });
+  /* feedback */
+  on("mfMic", () => showToast("Voice capture records here in the full product — guardrails filter inappropriate language"));
 }
 
 /* ---------- Assessment Sample Questions (E1, Lite) ---------- */
@@ -2778,7 +3488,14 @@ const DEFAULT_INSIGHTS = [
 
 const ROUTES = {
   "home": { title: "District Dashboard", context: "District Overview — Delmar CSD, Jasper Middle/High School", render: viewHome },
-  "my-dashboard": { title: "My Dashboard", context: "Student view", render: viewStudentDashboard },
+  "my-dashboard": { title: "My Dashboard", context: "Student view — Sofia Nguyen, Class of 2028", render: viewStudentDashboard },
+  "student-welcome": { title: "Welcome to Student EI", context: "Student onboarding — durable skills summary", render: viewStudentWelcome },
+  "student-assessment": { title: "Durable Skills Questions", context: "Student assessment — three sections, three question formats", render: viewStudentAssessment },
+  "my-durable-skills": { title: "My Durable Skills", context: "Student view — skills summary by cycle", render: viewMyDurableSkills },
+  "my-credentials": { title: "My Credentials", context: "Student view — credential progress and check-ins", render: viewMyCredentials },
+  "my-interests": { title: "My Interests", context: "Student view — career and personal interests", render: viewMyInterests },
+  "my-feedback": { title: "My Feedback", context: "Student view — feedback and experiences", render: viewMyFeedback },
+  "student-register": { title: "Create Account", context: "Student registration", render: () => "" },
   "signon": { title: "Sign In", context: "District Sign-on", render: () => "" },
   "new-chat": { title: "New Chat", context: "MAV Chat — ask anything, results open in the content area",
     render: viewNewChat,
@@ -2836,6 +3553,11 @@ function render(){
 
   const signon = document.getElementById("signon");
   const app = document.getElementById("app");
+  const reg = document.getElementById("studentReg");
+  if (name === "student-register" && !isAuthenticated()) {
+    signon.hidden = true; app.style.display = "none"; reg.hidden = false; renderReg(); return;
+  }
+  reg.hidden = true;
   if (!isAuthenticated()) {
     signon.hidden = false;
     app.style.display = "none";
@@ -2855,11 +3577,11 @@ function render(){
   let insights = route.insights || DEFAULT_INSIGHTS;
 
   /* role guards */
-  if (ROLES[currentRole].student && name !== "my-dashboard" && name !== "signon") {
+  if (ROLES[currentRole].student && name !== "signon" && !STUDENT_ROUTES.has(name)) {
     location.hash = "#/my-dashboard";
     return;
   }
-  if (!ROLES[currentRole].student && name === "my-dashboard") {
+  if (!ROLES[currentRole].student && STUDENT_ROUTES.has(name)) {
     location.hash = "#/home";
     return;
   }
@@ -2946,6 +3668,7 @@ function render(){
   });
 
   wireView();
+  wireStudentViews();
   document.querySelector(".main").scrollTop = 0;
 }
 
@@ -3325,15 +4048,15 @@ function applyRole(key){
     const el = document.getElementById(id);
     if (el) el.style.display = isStudent ? "none" : "";
   });
-  document.getElementById("navStudentHome").hidden = !isStudent;
+  document.querySelectorAll(".stu-nav").forEach(el => { el.hidden = !isStudent; });
   document.getElementById("mavPanel").style.display = isStudent ? "none" : "";
   /* highlight current role in menu */
   document.querySelectorAll(".role-item").forEach(el =>
     el.classList.toggle("current", el.dataset.role === key));
   roleMenu.hidden = true;
   /* land the new role on an allowed screen */
-  if (isStudent && currentRoute()[0] !== "my-dashboard") { location.hash = "#/my-dashboard"; }
-  else if (!isStudent && currentRoute()[0] === "my-dashboard") { location.hash = "#/home"; }
+  if (isStudent && !STUDENT_ROUTES.has(currentRoute()[0])) { location.hash = "#/my-dashboard"; }
+  else if (!isStudent && STUDENT_ROUTES.has(currentRoute()[0])) { location.hash = "#/home"; }
   else if (hideConsole && currentRoute()[0] === "console") { location.hash = "#/home"; }
   else render();
   showToast("Now viewing as " + r.name + " — " + r.title);
@@ -3364,6 +4087,10 @@ document.getElementById("signinBtn").addEventListener("click", () => {
   setAuthenticated(true);
   applyRole(signonRole.value);
   location.hash = ROLES[signonRole.value].student ? "#/my-dashboard" : "#/home";
+});
+document.getElementById("createAcctLink").addEventListener("click", () => {
+  regStep = 0;
+  location.hash = "#/student-register";
 });
 
 /* Menu expand/collapse */
