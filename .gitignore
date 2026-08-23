@@ -1,2 +1,6 @@
 .DS_Store
 *.docx
+qa/node_modules/
+qa/shots/
+qa/package.json
+qa/package-lock.json
