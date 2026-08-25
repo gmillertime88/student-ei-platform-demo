@@ -2570,7 +2570,7 @@ function viewConsoleUsers(){
           <td><div class="cell-name"><div class="avatar">${u.name.split(" ").map(w => w[0]).join("").replace("D","").slice(0,2).toUpperCase() || u.name.slice(0,2)}</div><span><b>${u.name}</b><br><span style="font-size:12px;color:var(--n500)">${u.email}</span></span></div></td>
           <td>${u.role}</td>
           <td><span class="tag ${u.tier === "Admin" ? "blue" : ""}">${u.tier}</span></td>
-          <td><span class="badge ${inviteBadge(u.invite)}">${u.invite}</span>${u.invite === "Expired" ? ' <button class="chip-filter" data-toast="Invite re-sent to l.fitzgerald@delmarcsd.org" style="margin-left:6px">Re-send</button>' : ""}</td>
+          <td><span class="badge ${inviteBadge(u.invite)}">${u.invite}</span>${u.invite === "Pending" ? ' <button class="chip-filter" data-toast="Invite link copied for James Petrillo" style="margin-left:6px">Copy invite link</button>' : u.invite === "Expired" ? ' <button class="chip-filter" data-toast="Invite re-sent to l.fitzgerald@delmarcsd.org" style="margin-left:6px">Re-send</button>' : ""}</td>
         </tr>`).join("")}
       </tbody>
     </table>

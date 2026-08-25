@@ -20,6 +20,12 @@ git commit -m "Describe your change"
 git push origin main
 ```
 
+Note: In a sandboxed agent terminal, `git push` may fail with an error like
+`Missing or invalid credentials` / `SecCodeCheckValidity` / `Missing pipe`. This happens
+because the sandbox blocks git's credential helper from reaching the macOS keychain.
+Re-run the push with unsandboxed execution (full filesystem/network access) so it can
+read the stored GitHub credentials.
+
 Then:
 1. Open Cloudflare dashboard -> Workers & Pages -> your project -> Deployments.
 2. Confirm latest commit hash shows success.

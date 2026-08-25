@@ -53,7 +53,7 @@ Four personas, chosen on the sign-on screen (`ROLES`, `applyRole()`):
 | ~~`#/frameworks`~~ | DELETED (R1) | Route redirects to Home |
 | ~~`#/graduate-profile`~~ | DELETED (R1) | Content now lives in the Home Graduate Profile module. Route redirects to Home |
 | `#/console` | Console | Tool tiles: User Management · SIS Integration · Assessment Management · Resources & Research · Platform Tutorial Videos · AI Help Desk |
-| `#/console/users` | User Management | Staff access + invitations (1 pending: James Petrillo) |
+| `#/console/users` | User Management | Staff access + invitations (1 pending: James Petrillo; **Copy invite link** action shown beside the pending status) |
 | `#/console/assessments` | Assessment Management | R2: template form (Assessment name / cycle / grad years / share) + "← Console" back link; 92-item note deleted. Create-new (cycle select + generate link, `amGen` state) + assessment library from `ASSESS_LIST` (one live link) |
 | `#/console/resources` | Resources & Research | R2: the 2026 District Leaders Survey & Research White Paper links to the real PDF (filesusr.com, new tab); "← Console" back link; grounded MAV scripts (`show me the latest whitepaper` · `what is the most recent durable skills assessment?`) |
 | `#/console/tutorials` | Platform Tutorial Videos | Stub — Assessments/Credentials/Benchmarks video tiles |
