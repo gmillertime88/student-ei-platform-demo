@@ -220,12 +220,12 @@ function check(name, cond) {
   vtext = await page.textContent("#view");
   check("student header: GPA + tallies + GP alignment", vtext.includes("GPA") && vtext.includes("Credential Tallies") && vtext.includes("Graduate Profile Alignment"));
   check("student header: Sofia printed numbers", vtext.includes("Algebra") && vtext.includes("240 of 500") && vtext.includes("Empowered Learner"));
-  check("student view: cycle chips", !!(await page.$('[data-stucycle="May 2025"]')));
+  check("student view: cycle dropdown mirrors the student view (R3)", (await page.$$eval("#stuCycleSel option", els => els.length)) === 4);
   const scoreBefore = await page.evaluate(() => scoresFor(getStudent(4), "Oct 2026")["Communication"]);
-  await page.click('[data-stucycle="May 2025"]'); await page.waitForTimeout(180);
+  await page.selectOption("#stuCycleSel", "May 2025"); await page.waitForTimeout(200);
   const scoreAfter = await page.evaluate(() => scoresFor(getStudent(4), stuCycle)["Communication"]);
   check("student view: past cycle shifts scores", scoreAfter < scoreBefore);
-  await page.click('[data-stucycle="Oct 2026"]'); await page.waitForTimeout(120);
+  await page.selectOption("#stuCycleSel", "Oct 2026"); await page.waitForTimeout(150);
   const staffLabs = await page.$$eval("#view .trend-endlab", els => els.map(e => e.textContent.trim()));
   check("staff student view mirrors durable skills presentation (R2)", staffLabs.length === 5 && staffLabs.every(l => ["Developing","Emerging","Advancing","Excelling","Mastering"].includes(l)));
 
@@ -540,6 +540,47 @@ function check(name, cond) {
     await page4.evaluate(rr => { location.hash = "#/" + rr; }, r); await page4.waitForTimeout(250);
     const ins = await page4.textContent("#mavInsights");
     check("student MAV shows no district aggregates: " + r, !/1,284|classes of 20|district goal \(81/.test(ins));
+  }
+
+  // R3: one proficiency scale — the report label always equals rangeOf(score)
+  const scaleBad = await page.evaluate(() => {
+    const bad = [];
+    STUDENTS.forEach(s => COMPS.forEach(c => {
+      if (s.id === STUDENT_SELF_ID) return;
+      const sc = scoresFor(s, "Oct 2026")[c];
+      if (sdBucket(bandWidth(sc)) !== rangeOf(sc)) bad.push(s.first + " " + c);
+    }));
+    return bad;
+  });
+  check("R3: report label matches roster range for every student", scaleBad.length === 0);
+  const devonOK = await page.evaluate(() => {
+    const d = STUDENTS.find(x => x.first === "Devon");
+    const sc = scoresFor(d, "Oct 2026")["Adaptability"];
+    return rangeOf(sc) === "Developing" && sdBucket(bandWidth(sc)) === "Developing";
+  });
+  check("R3: Devon reads Developing on benchmark and on his report", devonOK);
+  const contained = await page.evaluate(() => {
+    let bad = 0;
+    document.querySelectorAll("#view .trend-row").forEach(row => {
+      const line = row.querySelector(".trend-line"), lab = row.querySelector(".trend-endlab");
+      if (!line || !lab) return;
+      const tr = row.querySelector(".trend-track").getBoundingClientRect();
+      const col = tr.width / 5, lr = line.getBoundingClientRect(), br = lab.getBoundingClientRect();
+      const lc = Math.floor((lr.right - tr.left) / col);
+      const s0 = Math.floor((br.left - tr.left) / col), e0 = Math.floor((br.right - tr.left - 1) / col);
+      if (!(lc === s0 && s0 === e0)) bad++;
+    });
+    return bad;
+  });
+  check("R3: line end and label sit in the same proficiency column", contained === 0);
+  check("R3: benchmarks re-evaluate sentence removed", !(await page.evaluate(() => document.body.innerHTML.includes("re-evaluate against current data"))));
+  for (const r of ["console/users", "console/assessments", "console/resources", "console/tutorials", "sis"]) {
+    await page.evaluate(rr => { location.hash = "#/" + rr; }, r); await page.waitForTimeout(180);
+    const inTitle = await page.evaluate(() => {
+      const a = [...document.querySelectorAll("#view a")].find(x => x.textContent.includes("Console"));
+      return !!(a && a.closest(".page-title"));
+    });
+    check("R3: back arrow consistent on " + r, inTitle);
   }
 
   check("no page errors", errors.length === 0);
