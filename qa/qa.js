@@ -162,7 +162,7 @@ function check(name, cond) {
   check("home: October 2026 live cycle", vtext.includes("October 2026"));
   check("home: recent skills builders removed (R2)", !vtext.includes("Recent Skills Builders"));
   // R2 home: language select, Clear all, GP cohort chips, clickable i-icons
-  check("home: language selector (R2)", vtext.includes("English") && (await page.$$eval("#view select option", els => els.some(o => o.textContent.includes("Español")))));
+  check("home: language selector in header (R2)", (await page.$$eval("#langSel option", els => els.map(o => o.textContent).join(","))) === "English,Español" && (await page.$$eval("#view select option", els => els.filter(o => /Espa/.test(o.textContent)).length)) === 0);
   check("home: trend Clear all chip (R2)", !!(await page.$("#trendClear")));
   check("home: GP cohort chips (R2)", (await page.$$eval("[data-gpyear]", els => els.length)) === 8);
   await page.click('[data-gpyear="2029"]'); await page.waitForTimeout(150);
@@ -442,6 +442,105 @@ function check(name, cond) {
   check("resume mid-section 1 (likert)", v3.includes("Thinking about myself"));
   const fill = await page2.$$eval(".sa-seg-fill", els => els.map(e => e.style.width));
   check("progress bar shows partial section 1: " + fill.join(","), fill[0] !== "0%" && fill[0] !== "100%" && fill[1] === "0%");
+
+  // UX pass: scroll retention + app-shell layout
+  const page3 = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  page3.on("pageerror", e => errors.push("p3:" + String(e)));
+  await page3.goto(url); await page3.waitForTimeout(300);
+  await page3.click("#signinBtn"); await page3.waitForTimeout(400);
+  const lay = await page3.evaluate(() => {
+    const g = s => { const e = document.querySelector(s); const r = e.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height) }; };
+    const ins = document.getElementById("mavInsights").getBoundingClientRect();
+    const ch = document.getElementById("mavChips").getBoundingClientRect();
+    return { topbar: g(".topbar").h, logo: g(".topbar-logo").h, mavH: g(".mav-panel").h, content: g("#view").w,
+             gap: Math.round(ch.top - ins.bottom), collapsed: document.querySelector(".sidebar").classList.contains("collapsed") };
+  });
+  check("UX: header 106px tall", lay.topbar === 106);
+  check("UX: logo scaled up (>=58px)", lay.logo >= 58);
+  check("UX: MAV panel is viewport height, not page height", lay.mavH <= 800);
+  check("UX: MAV prompts sit near the insights (gap < 200px)", lay.gap < 200);
+  check("UX: sidebar auto-collapses below 1440", lay.collapsed === true);
+  check("UX: content column wider than 800px at 1280", lay.content > 800);
+  const held = async (sel, y) => {
+    await page3.evaluate(yy => window.scrollTo(0, yy), y); await page3.waitForTimeout(150);
+    const before = await page3.evaluate(() => window.scrollY);
+    await page3.evaluate(s => document.querySelector(s).click(), sel); await page3.waitForTimeout(300);
+    return (await page3.evaluate(() => window.scrollY)) === before && before > 0;
+  };
+  check("UX: info icon holds scroll position", await held(".trend-row .info-btn", 500));
+  check("UX: cycle chip holds scroll position", await held('[data-period="May 2026"]', 400));
+  check("UX: class chip holds scroll position", await held('[data-gy="2029"]', 400));
+  check("UX: graduate profile chip holds scroll position", await held('[data-gpyear="2030"]', 1100));
+  await page3.evaluate(() => { location.hash = "#/students"; }); await page3.waitForTimeout(350);
+  await page3.evaluate(() => window.scrollTo(0, 500)); await page3.waitForTimeout(150);
+  const sy = await page3.evaluate(() => window.scrollY);
+  await page3.evaluate(() => { const s = document.getElementById("fComp"); s.value = "Teamwork"; s.dispatchEvent(new Event("change")); });
+  await page3.waitForTimeout(300);
+  check("UX: student filter holds scroll position", (await page3.evaluate(() => window.scrollY)) === sy);
+  await page3.evaluate(() => { location.hash = "#/credentials"; }); await page3.waitForTimeout(350);
+  check("UX: route change still resets scroll", (await page3.evaluate(() => window.scrollY)) === 0);
+  await page3.evaluate(() => { location.hash = "#/new-chat"; }); await page3.waitForTimeout(300);
+  check("UX: New Chat hides the duplicate panel prompts", await page3.evaluate(() => document.getElementById("mavChipsWrap").hidden));
+  await page3.evaluate(() => window.scrollTo(0, 400)); await page3.waitForTimeout(150);
+  await page3.evaluate(() => document.querySelector("#view [data-mav]").click()); await page3.waitForTimeout(900);
+  check("UX: MAV click-through still lands at the top", (await page3.evaluate(() => window.scrollY)) === 0);
+  await page3.evaluate(() => { location.hash = "#/home"; }); await page3.waitForTimeout(300);
+  check("UX: prompts return on other screens", await page3.evaluate(() => !document.getElementById("mavChipsWrap").hidden));
+
+  // Spanish (demo scope: student experience only)
+  const page4 = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  page4.on("pageerror", e => errors.push("p4:" + String(e)));
+  await page4.goto(url); await page4.waitForTimeout(300);
+  await page4.click("#signinBtn"); await page4.waitForTimeout(400);
+  await page4.selectOption("#langSel", "es"); await page4.waitForTimeout(400);
+  let s4 = await page4.textContent("#view");
+  check("ES: staff sees Coming Soon, not Spanish", (await page4.textContent("#langSoon")).trim() === "Coming Soon" && s4.includes("District Overview") && s4.includes("Competency Trend"));
+  check("ES: only one language control on screen", (await page4.$$eval("select", els => els.filter(e => /Espa/.test(e.textContent)).length)) === 1);
+  check("ES: staff sidebar stays English", (await page4.textContent(".sidebar")).includes("Students"));
+  check("ES: Coming Soon pill in header", !(await page4.$eval("#langSoon", el => el.hidden)));
+  await page4.evaluate(() => document.getElementById("signOutBtn").click()); await page4.waitForTimeout(400);
+  await page4.selectOption("#signonRole", "student");
+  await page4.click("#signinBtn"); await page4.waitForTimeout(400);
+  check("ES: language resets to English on role change", (await page4.$eval("#langSel", el => el.value)) === "en");
+  await page4.selectOption("#langSel", "es"); await page4.waitForTimeout(450);
+  s4 = await page4.textContent("#view");
+  check("ES: student hub translated", s4.includes("Mi Panel") && s4.includes("\u00a1Hola Sofia!"));
+  check("ES: student sidebar translated", (await page4.textContent(".sidebar")).includes("Mis Habilidades Duraderas"));
+  check("ES: breadcrumb translated", (await page4.textContent("#crumbScreen")).includes("Mi Panel"));
+  check("ES: MAV panel translated", (await page4.textContent("#mavPanel")).includes("Vista del estudiante"));
+  check("ES: no Coming Soon for students", await page4.$eval("#langSoon", el => el.hidden));
+  await page4.evaluate(() => { location.hash = "#/my-durable-skills"; }); await page4.waitForTimeout(400);
+  s4 = await page4.textContent("#view");
+  const esRanges = await page4.$$eval(".trend-ranges span", els => els.map(e => e.textContent.trim()));
+  check("ES: competencies and ranges translated", s4.includes("Autogesti\u00f3n") && esRanges.join(",") === "En Desarrollo,Emergente,Avanzando,Destacado,Dominando");
+  await page4.evaluate(() => { location.hash = "#/my-credentials"; }); await page4.waitForTimeout(400);
+  s4 = await page4.textContent("#view");
+  check("ES: credentials page translated", s4.includes("C\u00f3mo funcionan las credenciales") && s4.includes("Tienes un nuevo Skills Builder"));
+  check("ES: credential cards use 'meta' not 'goal'", s4.includes("meta 375") && !s4.includes("goal 375"));
+  await page4.evaluate(() => { location.hash = "#/my-dashboard"; }); await page4.waitForTimeout(350);
+  check("ES: tallies use 'de' not 'of'", (await page4.textContent("#view")).includes("240 de 500"));
+  await page4.evaluate(() => { location.hash = "#/my-credentials"; }); await page4.waitForTimeout(350);
+  await page4.click("#ebqStart"); await page4.waitForTimeout(350);
+  s4 = await page4.textContent("#view");
+  check("ES: Skills Builder questions translated", s4.includes("Mirando atr\u00e1s a las dos semanas"));
+  check("ES: question counter interpolates", s4.includes("pregunta 1 de 5"));
+  await page4.click('[data-ebq-opt="0"]'); await page4.waitForTimeout(300);
+  check("ES: point toast translated", (await page4.textContent("#toast")).includes("\u00a1Buen trabajo! +4 puntos"));
+  await page4.evaluate(() => { location.hash = "#/student-assessment"; }); await page4.waitForTimeout(450);
+  s4 = await page4.textContent("#view");
+  check("ES: assessment translated", s4.includes("Pensando en m\u00ed mismo") && s4.includes("Nunca"));
+  await page4.evaluate(() => { location.hash = "#/new-chat"; }); await page4.waitForTimeout(350);
+  await page4.evaluate(() => mavAsk("What do I need to do next?")); await page4.waitForTimeout(800);
+  check("ES: MAV reply translated", (await page4.textContent("#mavPanel")).includes("Algunas cosas, Sofia"));
+  await page4.selectOption("#langSel", "en"); await page4.waitForTimeout(450);
+  check("ES: switching back restores English", (await page4.textContent(".sidebar")).includes("My Durable Skills") && (await page4.textContent("#view")).includes("Thinking about myself"));
+
+  // student experience must never surface district aggregates
+  for (const r of ["student-welcome", "student-assessment", "my-dashboard", "my-durable-skills", "my-credentials", "my-feedback"]) {
+    await page4.evaluate(rr => { location.hash = "#/" + rr; }, r); await page4.waitForTimeout(250);
+    const ins = await page4.textContent("#mavInsights");
+    check("student MAV shows no district aggregates: " + r, !/1,284|classes of 20|district goal \(81/.test(ins));
+  }
 
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));
