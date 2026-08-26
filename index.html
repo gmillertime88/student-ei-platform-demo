@@ -607,6 +607,14 @@ table.data tr.gated:nth-child(even):hover{background:var(--n100)}
 .sd-range-label{font-size:12.5px;font-weight:700;color:var(--n700);text-align:right;margin-top:6px}
 
 /* Competency info popovers */
+.caret-btn{
+  width:20px;height:20px;border-radius:var(--r-pill);border:none;flex:none;
+  background:var(--primary-light);color:var(--primary);
+  display:inline-flex;align-items:center;justify-content:center;
+  vertical-align:2px;margin-left:5px;cursor:pointer;
+}
+.caret-btn:hover{background:#DCE8F7}
+.caret-btn.on{background:var(--primary);color:#fff}
 .info-btn{
   width:20px;height:20px;border-radius:var(--r-pill);border:none;flex:none;
   background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;
@@ -1373,6 +1381,8 @@ function hiddenNote(n){
 
 /* ================= SVG snippets ================= */
 const ICO = {
+  caretDown: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  caretUp: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   spark: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M12 3v18M5.64 5.64l12.72 12.72M18.36 5.64L5.64 18.36" stroke="#2667AA" stroke-width="1.8" stroke-linecap="round"/></svg>',
   up: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="#4CAF50" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   lock: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#6B6B8A" stroke-width="1.8"/><path d="M8 10V7a4 4 0 018 0v3" stroke="#6B6B8A" stroke-width="1.8"/></svg>',
@@ -1449,8 +1459,7 @@ function homeTrend(){
       return `
     <div class="trend-row">
       <div class="bar-meta" style="margin-bottom:4px">
-        <span class="bar-name">${c} <small>(1,168 assessed)</small><button class="info-btn" data-compinfo="${c}" title="Definition and subskills">i</button></span>
-        <button class="link-btn" style="margin:0;padding:0;font-size:12px" data-trend-all="${c}">${showAll ? "Show current" : "Show all 4"}</button>
+        <span class="bar-name">${c} <small>(1,168 assessed)</small><button class="info-btn" data-compinfo="${c}" title="Definition and subskills">i</button><button class="caret-btn${showAll ? " on" : ""}" data-trend-all="${c}" title="${showAll ? "Collapse to the current cycle" : "Expand to all four assessment cycles"}" aria-expanded="${showAll}">${showAll ? ICO.caretUp : ICO.caretDown}</button></span>
       </div>
       <div class="trend-track">
         ${active.map(p => `
@@ -3742,7 +3751,8 @@ function wireView(){
     el.addEventListener("click", () => { trendYear = el.dataset.gy; render(); });
   });
   document.querySelectorAll("#view [data-trend-all]").forEach(el => {
-    el.addEventListener("click", () => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
       const c = el.dataset.trendAll;
       trendRowAll[c] = !trendRowAll[c];
       render();

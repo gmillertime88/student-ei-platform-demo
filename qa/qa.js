@@ -583,6 +583,27 @@ function check(name, cond) {
     check("R3: back arrow consistent on " + r, inTitle);
   }
 
+  // R3b: caret expand/collapse replaces the "Show all 4" text link
+  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(300);
+  const homeTxt = await page.textContent("#view");
+  check("R3b: text link replaced by caret control", !homeTxt.includes("Show all 4") && !homeTxt.includes("Show current") && (await page.$$eval(".caret-btn", els => els.length)) === 5);
+  check("R3b: caret sits beside the info icon", await page.evaluate(() => {
+    const row = document.querySelector("#view .trend-row");
+    const i = row.querySelector(".info-btn").getBoundingClientRect();
+    const c = row.querySelector(".caret-btn").getBoundingClientRect();
+    return c.left - i.right < 12 && c.left > i.left && Math.abs(c.top - i.top) < 3;
+  }));
+  const lineCount = () => page.evaluate(() => document.querySelectorAll("#view .trend-row")[0].querySelectorAll(".trend-line").length);
+  check("R3b: collapsed shows one cycle", (await lineCount()) === 1);
+  await page.evaluate(() => document.querySelector("#view .caret-btn").click()); await page.waitForTimeout(300);
+  check("R3b: caret expands to all four cycles", (await lineCount()) === 4);
+  check("R3b: expanded caret points up", await page.evaluate(() => {
+    const c = document.querySelector("#view .caret-btn");
+    return c.getAttribute("aria-expanded") === "true" && c.innerHTML.includes("M18 15l-6-6-6 6");
+  }));
+  await page.evaluate(() => document.querySelector("#view .caret-btn").click()); await page.waitForTimeout(300);
+  check("R3b: caret collapses and points down", (await lineCount()) === 1 && await page.evaluate(() => document.querySelector("#view .caret-btn").innerHTML.includes("M6 9l6 6 6-6")));
+
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));
 
