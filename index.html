@@ -214,7 +214,12 @@ h1.page-title{font-size:24px;font-weight:700;letter-spacing:-0.01em;line-height:
 .metric-label{
   font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;
   color:var(--n500);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  white-space:nowrap;
 }
+/* the four home tiles carry the longest labels; shrink the type rather than wrap */
+@media (max-width:1700px){ .metric-label{font-size:11.5px;letter-spacing:0.02em} }
+@media (max-width:1500px){ .metric-label{font-size:11px;letter-spacing:0.01em} }
+@media (max-width:1380px){ .metric-label{font-size:10.5px;letter-spacing:0} }
 .metric-card.center{display:flex;flex-direction:column;align-items:center;text-align:center}
 .metric-card.center .metric-label{justify-content:center}
 .metric-card.center .metric-trend{justify-content:center}
@@ -677,7 +682,7 @@ table.data tr.gated:nth-child(even):hover{background:var(--n100)}
 .trend-row .bar-meta{flex-wrap:nowrap}
 .trend-row .bar-name{white-space:nowrap}
 .trend-ranges{display:grid;grid-template-columns:repeat(5,1fr);margin:10px 0 4px;font-size:10px;font-weight:700;letter-spacing:0.01em;text-transform:uppercase;color:var(--n500)}
-.trend-ranges span{text-align:left;padding-left:2px}
+.trend-ranges span{text-align:center}
 .trend-row{padding:10px 0;border-bottom:1px solid var(--n100)}
 .trend-row:last-of-type{border-bottom:none}
 .trend-track{background-image:linear-gradient(to right, var(--n200) 1px, transparent 1px);background-size:20% 100%;border-right:1px solid var(--n200);padding:2px 0}
@@ -1180,7 +1185,7 @@ function gpOf(s, comp){ /* per-student Graduate Profile alignment %, determinist
   const base = j < 5 ? s.scores[comp]
     : Math.round((s.scores["Teamwork"] + s.scores["Communication"] + s.scores["Creativity"]) / 3) + [4, 9, -2][j - 5];
   const jitter = ((s.id * 17 + j * 29) % 21) - 10;
-  return Math.max(18, Math.min(88, base - 18 + jitter));
+  return Math.max(18, Math.min(88, Math.round((base - 18 + jitter) * gpClassFactor(String(s.gradYear)))));
 }
 function gpOverall(s){ return Math.round(GP_COMPS.reduce((t, c) => t + gpOf(s, c), 0) / GP_COMPS.length); }
 
@@ -1484,14 +1489,16 @@ const GP_DIST = [
   ["Adaptability", 65, false], ["Communication", 76, false],
   ["Critical Thinking", 62, true], ["Empowered Learner", 71, true], ["Global Citizen", 67, true]
 ];
-const GP_CLASS_LOW = ["Class of 2029", 54]; /* lowest aggregate GP mapping of any graduating class */
+const GP_CLASS_LOW = ["Class of 2033", 54]; /* lowest aggregate GP mapping of any graduating class */
 let gpTrendYear = "All"; /* R2: cohort filter on the home Graduate Profile module */
-const GP_CLASS_ADJ = { "2027": 4, "2028": 2, "2029": -8, "2030": -2, "2031": -3, "2032": -4, "2033": -5 };
+/* Successive reductions of 6.9 / 6.0 / 9.0 / 4.9 / 8.1 / 6.1 percent, normalised
+   so the seven classes average out to the district "All Students" figure. */
+const GP_CLASS_FACTOR = { "2027": 1.227, "2028": 1.142, "2029": 1.073, "2030": 0.976, "2031": 0.928, "2032": 0.853, "2033": 0.801 };
+function gpClassFactor(y){ return GP_CLASS_FACTOR[y] || 1; }
 function gpDistVal(i){
   const base = GP_DIST[i][1];
   if (gpTrendYear === "All") return base;
-  const adj = GP_CLASS_ADJ[gpTrendYear] || 0;
-  return Math.max(20, Math.min(92, base + adj + ((i * 3) % 4) - 1));
+  return Math.max(20, Math.min(95, Math.round(base * gpClassFactor(gpTrendYear))));
 }
 function homeGradProfile(){
   const lowest = GP_DIST.reduce((a, r) => r[1] < a[1] ? r : a, GP_DIST[0]);
@@ -1545,7 +1552,7 @@ function viewHome(){
     </div>
     <div class="card metric-card center">
       <div class="metric-label">Graduate Profile Alignment</div>
-      <div class="metric-value" style="color:var(--primary)">68<span class="unit">%</span></div>
+      <div class="metric-value">68<span class="unit">%</span></div>
       <div class="metric-trend">${ICO.up} +5 pts vs. Oct 2025</div>
     </div>
     <div class="card metric-card center">
@@ -2314,7 +2321,7 @@ function pdgLines(){
 function pdgVal(comp, ln){
   const ci = COMPS.indexOf(comp);
   let v = PDG_BASE[comp];
-  if (ln.year) v += (GP_CLASS_ADJ[ln.year] || 0) + ((ci * 2) % 3) - 1;
+  if (ln.year) v = Math.round(v * gpClassFactor(ln.year)) + ((ci * 2) % 3) - 1;
   if (ln.month) v += PDG_MONTH_ADJ[ln.month] + (ci % 2);
   return Math.max(12, Math.min(90, v));
 }
@@ -2372,7 +2379,7 @@ function viewCredentials(){
     </div>
     <div class="card metric-card">
       <div class="metric-label">Students Past Goal (375)</div>
-      <div class="metric-value" style="color:var(--primary)">402<span class="unit">of 1,284</span></div>
+      <div class="metric-value">402<span class="unit">of 1,284</span></div>
       <div class="metric-note">credential badge earned</div>
     </div>
     <div class="card metric-card">
@@ -3469,7 +3476,7 @@ const STUDENT_DEFAULT_INSIGHTS = [
   "Ask MAV anything about your skills, credentials, or Graduate Profile."
 ];
 const DEFAULT_INSIGHTS = [
-  "Creativity is furthest from the district goal (81% of goal) — concentrated in the classes of 2029 and 2030.",
+  "Creativity is furthest from the district goal (81% of goal) — concentrated in the classes of 2032 and 2033.",
   "Communication improved +6 points since October — the largest gain of any competency this year.",
   "116 of 1,284 students have not yet started their Durable Skills Summary for October 2026."
 ];
@@ -4316,6 +4323,7 @@ const I18N_ES_RX = [
 ];
 
 const I18N_ORIG = new WeakMap(); /* static regions: remember the English source */
+const I18N_ATTR = new WeakMap(); /* placeholder/title originals, restored on switch back */
 function i18nLookup(s){
   const k = s.trim();
   if (!k) return null;
@@ -4340,19 +4348,32 @@ function i18nTree(root, toEs, remember){
     const t = i18nLookup(src);
     if (t !== null) n.nodeValue = t;
   });
-  if (!toEs) return;
-  root.querySelectorAll("[placeholder]").forEach(e => { const t = i18nLookup(e.placeholder); if (t !== null) e.placeholder = t; });
-  root.querySelectorAll("[title]").forEach(e => { const t = i18nLookup(e.title); if (t !== null) e.title = t; });
+  root.querySelectorAll("[placeholder],[title]").forEach(e => {
+    if (e.id === "mavInput") return; /* role-owned; set in applyLang() */
+    let orig = I18N_ATTR.get(e);
+    if (!orig) { orig = { placeholder: e.getAttribute("placeholder"), title: e.getAttribute("title") }; I18N_ATTR.set(e, orig); }
+    ["placeholder", "title"].forEach(a => {
+      if (orig[a] == null) return;
+      if (!toEs) { e.setAttribute(a, orig[a]); return; }
+      const t = i18nLookup(orig[a]);
+      e.setAttribute(a, t === null ? orig[a] : t);
+    });
+  });
 }
 /* Spanish applies only to the student experience in this demo */
 function langActive(){ return lang === "es" && ROLES[currentRole] && ROLES[currentRole].student; }
 function applyLang(){
   const es = langActive();
+  /* remembered regions hold static labels, so they must be restored both ways */
   i18nTree(document.querySelector(".sidebar"), es, true);
   i18nTree(document.getElementById("studentReg"), es, true);
+  i18nTree(document.getElementById("mavPanel"), es, true);
+  const phEn = ROLES[currentRole] && ROLES[currentRole].student
+    ? "Ask MAV about your skills..." : "Ask MAV about your district...";
+  const phEs = i18nLookup(phEn);
+  mavInput.placeholder = es && phEs !== null ? phEs : phEn;
   if (!es) return;
   i18nTree(document.getElementById("view"), true, false);
-  i18nTree(document.getElementById("mavPanel"), true, false);
   i18nTree(document.getElementById("crumbScreen"), true, false);
 }
 function setLang(v){
@@ -4375,7 +4396,7 @@ function mavNavStudents(filters){
 
 const MAV_SCRIPTS = {
   "which competency needs the most attention?": {
-    reply: "<b>Creativity</b> is the competency furthest from the district goal, at <b>81% of goal</b>, concentrated in the classes of 2029 and 2030. Try asking me to show the students in the Developing range for Creativity.",
+    reply: "<b>Creativity</b> is the competency furthest from the district goal, at <b>81% of goal</b>, concentrated in the classes of 2032 and 2033. Try asking me to show the students in the Developing range for Creativity.",
     action: null
   },
   "show me the class of 2028 with emerging communication": {

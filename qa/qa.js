@@ -604,6 +604,63 @@ function check(name, cond) {
   await page.evaluate(() => document.querySelector("#view .caret-btn").click()); await page.waitForTimeout(300);
   check("R3b: caret collapses and points down", (await lineCount()) === 1 && await page.evaluate(() => document.querySelector("#view .caret-btn").innerHTML.includes("M6 9l6 6 6-6")));
 
+  // R4 (GM 2026-08-26)
+  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(300);
+  check("R4: home tile values are not blue", await page.evaluate(() =>
+    [...document.querySelectorAll("#view .metric-card .metric-value")].every(e => getComputedStyle(e).color === "rgb(26, 26, 46)")));
+  const gpByClass = await page.evaluate(() => {
+    const before = gpTrendYear;
+    const out = ["2027","2028","2029","2030","2031","2032","2033"].map(y => {
+      gpTrendYear = y;
+      return Math.round(GP_DIST.reduce((t, _, i) => t + gpDistVal(i), 0) / GP_DIST.length);
+    });
+    gpTrendYear = before;
+    return out;
+  });
+  check("R4: graduate profile declines every class year (" + gpByClass.join(">") + ")",
+    gpByClass.every((v, i) => i === 0 || v < gpByClass[i - 1]));
+  check("R4: each class is 5-10% below the one before", await page.evaluate(() => {
+    const ys = ["2027","2028","2029","2030","2031","2032","2033"];
+    return ys.slice(1).every((y, i) => {
+      const d = 1 - gpClassFactor(y) / gpClassFactor(ys[i]);
+      return d >= 0.045 && d <= 0.10;
+    });
+  }));
+  check("R4: lowest-class callout follows the curve", await page.evaluate(() => GP_CLASS_LOW[0] === "Class of 2033"));
+  check("R4: insight copy names the lowest classes", await page.evaluate(() => DEFAULT_INSIGHTS[0].includes("2032 and 2033")));
+  await page.evaluate(() => { location.hash = "#/credentials"; }); await page.waitForTimeout(300);
+  check("R4: credentials tile values are not blue", await page.evaluate(() =>
+    [...document.querySelectorAll("#view .metric-card .metric-value")].every(e => getComputedStyle(e).color === "rgb(26, 26, 46)")));
+  const pdgByClass = await page.evaluate(() => ["2027","2028","2029","2030","2031","2032","2033"].map(y =>
+    Math.round(COMPS.reduce((t, c) => t + pdgVal(c, { label: "", year: y, month: null }), 0) / COMPS.length)));
+  check("R4: credentials module uses the same class curve", pdgByClass.every((v, i) => i === 0 || v < pdgByClass[i - 1]));
+  await page.evaluate(() => { location.hash = "#/student/4"; }); await page.waitForTimeout(350);
+  check("R4: range labels centred over their columns", await page.evaluate(() => {
+    const sp = [...document.querySelectorAll("#view .trend-ranges span")];
+    const wrap = document.querySelector("#view .trend-ranges").getBoundingClientRect();
+    const col = wrap.width / 5;
+    return sp.every((e, i) => {
+      const r = e.getBoundingClientRect();
+      return Math.abs((r.left + r.width / 2 - wrap.left) - (col * i + col / 2)) < 2;
+    });
+  }));
+  check("R4: home tile labels never wrap", await page.evaluate(() => {
+    location.hash = "#/home";
+    return true;
+  }) && await (async () => { await page.waitForTimeout(300); return page.evaluate(() =>
+    [...document.querySelectorAll("#view .metric-card .metric-label")].every(e => getComputedStyle(e).whiteSpace === "nowrap")); })());
+  // Spanish must restore English on every switch back, including static panel labels
+  await page4.evaluate(() => { location.hash = "#/my-durable-skills"; }); await page4.waitForTimeout(300);
+  await page4.selectOption("#langSel", "es"); await page4.waitForTimeout(400);
+  const esSnap = await page4.evaluate(() => ({ ask: document.querySelector("#mavChipsWrap .mav-label").textContent.trim(), ph: document.getElementById("mavInput").placeholder }));
+  check("R4: panel labels and placeholder translate", esSnap.ask !== "Ask MAV" && esSnap.ph !== "Ask MAV about your skills...");
+  await page4.selectOption("#langSel", "en"); await page4.waitForTimeout(400);
+  let enSnap = await page4.evaluate(() => ({ ask: document.querySelector("#mavChipsWrap .mav-label").textContent.trim(), ctx: document.querySelector(".mav-context-label").textContent.trim(), ph: document.getElementById("mavInput").placeholder }));
+  check("R4: panel labels and placeholder revert to English", enSnap.ask === "Ask MAV" && enSnap.ctx === "Current View" && enSnap.ph === "Ask MAV about your skills...");
+  for (let i = 0; i < 3; i++) { await page4.selectOption("#langSel", "es"); await page4.waitForTimeout(160); await page4.selectOption("#langSel", "en"); await page4.waitForTimeout(160); }
+  enSnap = await page4.evaluate(() => ({ ask: document.querySelector("#mavChipsWrap .mav-label").textContent.trim(), ph: document.getElementById("mavInput").placeholder }));
+  check("R4: repeated switching still ends in English", enSnap.ask === "Ask MAV" && enSnap.ph === "Ask MAV about your skills...");
+
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));
 
