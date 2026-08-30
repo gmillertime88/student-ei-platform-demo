@@ -394,6 +394,42 @@ table.data tr.gated:nth-child(even):hover{background:var(--n100)}
 .assess-sub{font-size:12px;color:var(--n500);font-weight:400}
 .live-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--risk-low-fg);background:var(--risk-low-bg);border-radius:var(--r-pill);padding:2px 10px}
 .live-pill .dot{width:6px;height:6px;border-radius:var(--r-pill);background:var(--success)}
+/* Awaiting Verification module (R5) */
+.av-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+table.data.av tbody tr{cursor:default}
+table.data.av tbody tr:hover{background:transparent}
+table.data.av tbody tr:nth-child(even){background:var(--n100)}
+table.data.av tbody tr:nth-child(even):hover{background:var(--n100)}
+table.data.av{table-layout:fixed}
+table.data.av th,table.data.av td{padding:11px 10px;font-size:12.5px;white-space:normal;vertical-align:top}
+table.data.av th:first-child,table.data.av td:first-child{padding-left:2px}
+table.data.av th:last-child,table.data.av td:last-child{padding-right:2px;text-align:center}
+table.data.av th:nth-child(1){width:28%}
+table.data.av th:nth-child(2){width:16%}
+table.data.av th:nth-child(3){width:14%}
+table.data.av th:nth-child(4){width:12%}
+table.data.av th:nth-child(5){width:21%}
+table.data.av th:nth-child(6){width:9%}
+table.data.av th{font-size:10.5px}
+table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;padding:3px 9px}
+.av-act{font-weight:600;color:var(--n900);font-size:13.5px}
+.av-sub{font-size:12px;color:var(--n500);margin-top:2px}
+.av-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.av-tags .tag{font-size:11px;padding:2px 8px}
+.av-box{width:15px;height:15px;border:1.5px solid var(--n200);border-radius:4px;display:inline-block;vertical-align:middle;background:var(--surface)}
+.av-box.on{background:var(--success);border-color:var(--success);position:relative}
+.av-box.on::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.av-foot{display:flex;justify-content:flex-end;font-size:12px;color:var(--n500);padding-top:12px}
+.av-fb-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+table.data.av.av-home tbody tr{cursor:pointer}
+table.data.av.av-home tbody tr:hover{background:var(--primary-light)}
+table.data.av.av-home th:nth-child(1){width:17%}
+table.data.av.av-home th:nth-child(2){width:29%}
+table.data.av.av-home th:nth-child(3){width:15%}
+table.data.av.av-home th:nth-child(4){width:15%}
+table.data.av.av-home th:nth-child(5){width:13%}
+table.data.av.av-home th:nth-child(6){width:11%}
+table.data.av.av-home .cell-name{align-items:flex-start}
 .dormant-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--n500);background:var(--n200);border-radius:var(--r-pill);padding:2px 10px}
 
 /* ============ (retired R1: surveys css kept for unused selectors removed below) ============ */
@@ -1172,6 +1208,88 @@ const STUDENTS = ROSTER.map((r, i) => {
   };
 });
 
+/* ---- Awaiting Verification (R5, Tyler 2026-08-28) — student-, parent- and coach-submitted
+       activities queued for district verification. Demo data: visual only, no workflow. ---- */
+const AV_PENDING = "Awaiting Verification";
+const AV_N = [0, 4, 2, 0, 4, 3, 0, 2, 0, 1]; /* pending items by student id % 10 — Sofia (id 4) = 4 */
+function avCount(s){ return AV_N[s.id % 10]; }
+function avAccepted(s){ return avCount(s) > 0 ? 1 : 0; }
+const AV_ROWS = [
+  { act: "Summer Job", sub: "Ice Cream Shop", by: "Student", iso: "2025-05-22T14:14", src: "Student Entry",
+    tags: ["Communication","Customer Service","Work Ethic"] },
+  { act: "Club", sub: "Robotics Team", by: "Student", iso: "2025-05-21T18:45", src: "Student Entry",
+    tags: ["Critical Thinking","Teamwork","Problem Solving"] },
+  { act: "Student Council", sub: "Member", by: "Student", iso: "2025-05-18T16:08", src: "Student Entry",
+    tags: ["Leadership","Communication","Responsibility"] },
+  { act: "Volunteer", sub: "Animal Shelter", by: "parent:Sarah", iso: "2025-05-17T11:52", src: "Parent Entry",
+    tags: ["Compassion","Responsibility","Adaptability"] },
+  /* PT-authored in the same style so the district queue has depth (Tyler's four are above) */
+  { act: "Part-Time Job", sub: "Grocery Stocker", by: "Student", iso: "2025-05-16T17:30", src: "Student Entry",
+    tags: ["Work Ethic","Time Management","Responsibility"] },
+  { act: "Performing Arts", sub: "Fall Musical", by: "Student", iso: "2025-05-15T15:05", src: "Student Entry",
+    tags: ["Creativity","Teamwork","Perseverance"] },
+  { act: "Tutoring", sub: "Middle School Math", by: "Faculty · Ms. Alvarez", iso: "2025-05-14T13:20", src: "Faculty Entry",
+    tags: ["Communication","Listening","Leadership"] },
+  { act: "Community Service", sub: "Food Drive Lead", by: "parent:David", iso: "2025-05-13T10:41", src: "Parent Entry",
+    tags: ["Leadership","Compassion","Decision Making"] }
+];
+const AV_ACCEPTED_ROWS = [
+  { act: "School Sport", sub: "Football", by: "Coach · Mr. Johnson", iso: "2025-05-20T09:37", src: "Coach Entry",
+    tags: ["Teamwork","Discipline","Perseverance"] }
+];
+const AV_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+/* Sofia (id 4) carries Tyler's printed timestamps unshifted; every other student is
+   offset a deterministic number of days so the district queue reads as real traffic. */
+/* A parent shares the student's surname; faculty and coaches are district staff and stay named. */
+function avBy(s, r){ return r.by.startsWith("parent:") ? "Parent · " + r.by.slice(7) + " " + s.last : r.by; }
+function avShift(s, i){ return s.id === 4 ? 0 : (s.id * 7 + i * 13) % 23 + 1; }
+function avTime(s, r, i){
+  const d = new Date(r.iso);
+  d.setDate(d.getDate() - avShift(s, i));
+  if (s.id !== 4) d.setMinutes(d.getMinutes() - ((s.id * 17 + i * 29) % 47)); /* Sofia keeps Tyler's exact times */
+  return d;
+}
+function avWhen(s, r, i){
+  const d = avTime(s, r, i);
+  let h = d.getHours(), ap = h >= 12 ? "PM" : "AM";
+  h = h % 12; if (h === 0) h = 12;
+  return AV_MON[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() + " "
+       + h + ":" + String(d.getMinutes()).padStart(2, "0") + " " + ap;
+}
+function avPendingFor(s){
+  const base = s.id === 4 ? 0 : s.id % AV_ROWS.length; /* Sofia pinned to Tyler's four */
+  const rows = [];
+  for (let k = 0; k < avCount(s); k++) { const i = (base + k) % AV_ROWS.length; rows.push({ s, r: AV_ROWS[i], i }); }
+  return rows.sort((a, b) => avTime(b.s, b.r, b.i) - avTime(a.s, a.r, a.i));
+}
+function avAcceptedFor(s){
+  return AV_ACCEPTED_ROWS.slice(0, avAccepted(s)).map((r, i) => ({ s, r, i: i + 7 }));
+}
+/* District queue: each student's most recent pending submission, newest first,
+   so the home list never repeats one student or one activity back to back. */
+function avDistrictQueue(n){
+  const all = [];
+  STUDENTS.filter(canSee).forEach(s => avPendingFor(s).forEach(x => all.push(x)));
+  all.sort((a, b) => avTime(b.s, b.r, b.i) - avTime(a.s, a.r, a.i));
+  const out = [], seenStu = new Set(), seenAct = new Set();
+  for (const x of all) {
+    if (out.length >= n) break;
+    if (seenStu.has(x.s.id) || seenAct.has(x.r.act)) continue;
+    out.push(x); seenStu.add(x.s.id); seenAct.add(x.r.act);
+  }
+  for (const x of all) { /* top up if the pool ran out of distinct activities */
+    if (out.length >= n) break;
+    if (seenStu.has(x.s.id)) continue;
+    out.push(x); seenStu.add(x.s.id);
+  }
+  return out;
+}
+function avStudentsPending(){ return STUDENTS.filter(canSee).filter(s => avCount(s) > 0).length; }
+function avPendingTotal(){
+  return STUDENTS.filter(canSee).reduce((t, s) => t + avCount(s), 0);
+}
+let avTab = AV_PENDING;
+
 /* ---- Portrait of a Graduate — 8 competencies (R1: Tyler 2026-08-21).
        First 5 = durable skills (green); GP_EXTRA = district-added (blue). ---- */
 const GP_EXTRA = ["Critical Thinking","Empowered Learner","Global Citizen"];
@@ -1287,7 +1405,7 @@ const STAFF = [
 /* ---- Saved chats (replayable transcripts) ---- */
 const STUDENT_CHATS = [
   {
-    title: "My summer job — lifeguard", sub: "Yesterday · 4 messages",
+    title: "My summer job — ice cream stand", sub: "Yesterday · 4 messages",
     prompt: "Tell me what you did for summer work, fun, vacation to help build your skills credentials and Graduate Profile alignment"
   },
   {
@@ -1438,6 +1556,42 @@ function trendWidth(comp, cycle){
   const yAdj = trendYear === "All" ? 0 : (AGG_BASE[trendYear][ci] - AGG_BASE["All"][ci]);
   return Math.max(6, Math.min(100, TREND_W[comp] - TREND_DROP[cycle] + yAdj));
 }
+const AV_HOME_ROWS = 6;
+function homeAwaitingVerification(){
+  const shown = avDistrictQueue(AV_HOME_ROWS);
+  return `
+  <div class="card section-card">
+    <div class="section-head" style="margin-bottom:14px">
+      <h2 class="section-title">${AV_PENDING}</h2>
+      <span class="live-pill" style="background:var(--risk-med-bg);color:var(--risk-med-fg)">${avPendingTotal()} awaiting sign-off</span>
+    </div>
+    <p class="section-hint" style="margin:-6px 0 14px">Student, parent and coach submissions district-wide. Credential points post once a district user verifies the entry.</p>
+    ${shown.length ? `
+    <table class="data av av-home">
+      <thead><tr><th>Student</th><th>Activity / Experience</th><th>Submitted By</th><th>Submitted</th><th>Source</th><th>Verified</th></tr></thead>
+      <tbody>
+        ${shown.map(({ s, r, i }) => `
+        <tr data-nav="#/student/${s.id}">
+          <td><div class="cell-name"><div class="avatar">${s.initials}</div><b>${s.first} ${s.last}</b></div></td>
+          <td>
+            <div class="av-act">${r.act}</div>
+            <div class="av-sub">${r.sub}</div>
+            <div class="av-tags">${r.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+          </td>
+          <td>${avBy(s, r)}</td>
+          <td>${avWhen(s, r, i)}</td>
+          <td>${r.src}</td>
+          <td><span class="av-box"></span></td>
+        </tr>`).join("")}
+      </tbody>
+    </table>
+    <div class="av-foot" style="justify-content:space-between;align-items:center">
+      <button class="chip-filter" id="avReviewAll" style="background:var(--primary-light);color:var(--primary)">Review all in Students</button>
+      <span>Newest first · ${avPendingTotal()} submissions across ${avStudentsPending()} students</span>
+    </div>`
+    : `<p class="section-hint">Nothing is waiting on district sign-off right now.</p>`}
+  </div>`;
+}
 function homeTrend(){
   const years = ["All","2027","2028","2029","2030","2031","2032","2033"];
   const cycLabel = p => p === "Oct 2026" ? "Current" : p;
@@ -1445,7 +1599,7 @@ function homeTrend(){
   <div class="card section-card">
     <div class="section-head">
       <h2 class="section-title">Competency Trend — ${trendYear === "All" ? "District" : "Class of " + trendYear}</h2>
-      <span class="section-hint">October 2026 assessment · click past cycles to overlay</span>
+      <span class="section-hint">October 2026 assessment · click cycles to overlay</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
       <span class="chip-axis">Cycle</span>
@@ -1566,14 +1720,7 @@ function viewHome(){
 
   ${homeGradProfile()}
 
-  <div class="card section-card">
-    <div class="section-head">
-      <h2 class="section-title">Current Assessment Cycle</h2>
-      <span class="live-pill"><span class="dot"></span>October 2026 — Live Link</span>
-    </div>
-    ${barRow("Cycle Completion", "· closes November 30, 2026", "91% complete", "blue", 91)}
-    <p class="section-hint" style="margin-top:12px">Prior cycles (May 2026, Oct 2025) are dormant — one live assessment link at a time keeps district data current.</p>
-  </div>
+  ${homeAwaitingVerification()}
 
   <div style="margin-bottom:8px">
     <div class="section-head" style="margin-bottom:12px">
@@ -1667,7 +1814,8 @@ function filteredStudents(){
   if (f.status)     list = list.filter(s => s.status === f.status);
   if (f.gpMin)      list = list.filter(s => gpOverall(s) > f.gpMin);
   if (f.school)     list = list.filter(s => s.school === f.school);
-  if (f.credComp)   list = list.filter(s => credTop(s) === f.credComp);
+  if (f.credComp === AV_PENDING) list = list.filter(s => avCount(s) > 0);
+  else if (f.credComp) list = list.filter(s => credTop(s) === f.credComp);
   if (f.credMin)    list = list.filter(s => Math.max(...COMPS.map(c => credTally(s, c))) >= f.credMin);
   if (f.competency && f.proficiency)
     list = list.filter(s => rangeOf(scoresFor(s, f.assessDate || "Oct 2026")[f.competency]) === f.proficiency);
@@ -1689,7 +1837,7 @@ function filterChipsHtml(){
   if (f.school)    chips.push(["school", f.school]);
   if (f.competency && f.proficiency) chips.push(["comp", f.competency + ": " + f.proficiency]);
   if (f.assessDate && f.assessDate !== "Oct 2026") chips.push(["assessDate", "Assessment: " + f.assessDate]);
-  if (f.credComp)  chips.push(["credComp", "Credential: " + f.credComp]);
+  if (f.credComp)  chips.push(["credComp", f.credComp === AV_PENDING ? AV_PENDING : "Credential: " + f.credComp]);
   if (f.credMin)   chips.push(["credMin", "Credentials ≥ " + f.credMin]);
   if (f.gpComp)    chips.push(["gpComp", "Graduate Profile: " + f.gpComp]);
   if (!chips.length) return "";
@@ -1750,6 +1898,7 @@ function viewStudents(){
       </select>
       <select class="filter-select" id="fCred">
         <option value="">Credentials</option>
+        <option value="${AV_PENDING}" ${f.credComp === AV_PENDING ? "selected" : ""}>${AV_PENDING}</option>
         ${COMPS.map(v => `<option value="${v}" ${f.credComp === v ? "selected" : ""}>${v}</option>`).join("")}
       </select>
       <select class="filter-select" id="fGP">
@@ -1779,7 +1928,7 @@ function viewStudents(){
           <td><div class="cell-name"><div class="avatar">${s.initials}</div><b>${s.first} ${s.last}</b></div></td>
           <td>${s.gradYear}</td><td>${s.school}</td>
           <td><span class="tag blue">${f.competency || topSkillFor(s, f.assessDate || "Oct 2026")}</span></td>
-          <td>${credTop(s)} ${credTally(s, credTop(s))}/500</td>
+          <td>${f.credComp === AV_PENDING ? `<span class="tag">${AV_PENDING} (${avCount(s)})</span>` : `${credTop(s)} ${credTally(s, credTop(s))}/500`}</td>
           <td>${(gp => `<span class="badge ${gp >= 65 ? "badge-low" : gp >= 40 ? "badge-med" : "badge-high"}">${gp}%</span>`)(f.gpComp ? gpOf(s, f.gpComp) : gpOverall(s))}</td>
         </tr>`).join("") : `
         <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--n500)">${hiddenCount > 0 ? "All matching records are outside your current permissions." : `No students match these filters. <button class="chip-filter" data-clear="all" style="margin-left:8px">Clear all filters</button>`}</td></tr>`}
@@ -1797,6 +1946,7 @@ function cbSuggestedName(){
   const f = studentFilters, parts = ["PofG"];
   if (f.competency && f.proficiency) { parts.push(f.competency, f.proficiency); }
   else if (f.gpComp) parts.push(f.gpComp);
+  else if (f.credComp === AV_PENDING) parts.push("Awaiting-Verification");
   else if (f.credComp) parts.push(f.credComp, "Credentials");
   if (f.gradYear) parts.push("Class of " + f.gradYear);
   return parts.length > 1 ? parts.join("-") : "New Benchmark";
@@ -1809,7 +1959,7 @@ function createBenchmarkDialog(list){
   if (f.school) crit.push(f.school);
   if (f.competency && f.proficiency) crit.push(f.proficiency + " in " + f.competency);
   if (f.gpMin) crit.push("Portrait of a Graduate above " + f.gpMin + "%");
-  if (f.credComp) crit.push("top credential " + f.credComp);
+  if (f.credComp) crit.push(f.credComp === AV_PENDING ? "items awaiting verification" : "top credential " + f.credComp);
   if (f.gpComp) crit.push("viewed by " + f.gpComp);
   return `
   <div class="card section-card" style="border:1.5px solid var(--primary)">
@@ -1850,6 +2000,59 @@ function staffSdWidth(s, c){
   }
   return bandWidth(scoresFor(s, stuCycle)[c]);
 }
+/* -- Awaiting Verification module (R5) — district staff view of a student record.
+      Visual only: activities submitted by the student, a parent or a coach, queued for verification. -- */
+function avRowsHtml(s, rows, verified){
+  if (!rows.length) return `<p class="section-hint" style="padding:8px 0">Nothing in this queue for ${s.first} right now.</p>`;
+  return `
+  <table class="data av">
+    <thead><tr><th>Activity / Experience</th><th>Submitted By</th><th>Submitted</th><th>Source</th><th>Status</th><th>Verified</th></tr></thead>
+    <tbody>
+      ${rows.map(({ r, i }) => `
+      <tr>
+        <td>
+          <div class="av-act">${r.act}</div>
+          <div class="av-sub">${r.sub}</div>
+          <div class="av-tags">${r.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+        </td>
+        <td>${avBy(s, r)}</td>
+        <td>${avWhen(s, r, i)}</td>
+        <td>${r.src}</td>
+        <td><span class="badge ${verified ? "badge-low" : "badge-med"}">${verified ? "Accepted" : AV_PENDING}</span></td>
+        <td><span class="av-box${verified ? " on" : ""}"></span></td>
+      </tr>`).join("")}
+    </tbody>
+  </table>
+  <div class="av-foot">1 – ${rows.length} of ${rows.length}</div>`;
+}
+function avModule(s){
+  const pending = avPendingFor(s);
+  const accepted = avAcceptedFor(s);
+  const tabs = [[AV_PENDING, AV_PENDING + " (" + pending.length + ")"],
+                ["Accepted", "Accepted (" + accepted.length + ")"],
+                ["Add Feedback", "Add Feedback"]];
+  return `
+  <div class="card section-card">
+    <div class="section-head" style="margin-bottom:14px">
+      <h2 class="section-title" style="font-size:16px">${AV_PENDING}</h2>
+      <span class="section-hint">Activities and experiences submitted for this student</span>
+    </div>
+    <div class="av-tabs">
+      ${tabs.map(([k, label]) => `<button class="gy-chip ${avTab === k ? "on" : ""}" data-avtab="${k}">${label}</button>`).join("")}
+    </div>
+    ${avTab === "Add Feedback" ? `
+    <div class="av-fb">
+      <div class="mav-label">Add Feedback for This Student</div>
+      <p class="section-hint" style="margin-top:6px">Choose who is providing the feedback. Each request is sent by email with a single-use link.</p>
+      <div class="av-fb-btns">
+        ${["Faculty","Classmate","Parent","Other"].map(b => `<button class="gy-chip">${b}</button>`).join("")}
+      </div>
+    </div>`
+    : avTab === "Accepted" ? avRowsHtml(s, accepted, true)
+    : avRowsHtml(s, pending, false)}
+  </div>`;
+}
+
 function viewStudent(id){
   const s = getStudent(id);
   if (!s) return `<div class="card placeholder-card"><p class="placeholder-sub">Student not found. <a href="#/students" style="color:var(--primary);font-weight:600">Back to Students</a></p></div>`;
@@ -1924,18 +2127,7 @@ function viewStudent(id){
       }).join("")}
     </div>
 
-      <div class="card section-card">
-        <div class="section-head" style="margin-bottom:14px">
-          <h2 class="section-title" style="font-size:16px">Credential Progress</h2>
-        </div>
-        ${(() => { const top = credTop(s), v = credTally(s, top); return `
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
-          <span class="metric-value" style="font-size:28px;color:${v >= CRED_GOAL ? "var(--success)" : "var(--primary)"}">${v}</span>
-          <span class="section-hint">of ${CRED_MAX} in ${top} · goal ${CRED_GOAL}</span>
-        </div>
-        ${barRow("Progress to district goal", "", Math.round(v / CRED_MAX * 100) + "%", v >= CRED_GOAL ? "" : "blue", Math.round(v / CRED_MAX * 100), Math.round(CRED_GOAL / CRED_MAX * 100))}
-        <p class="section-hint" style="margin-top:12px">${v >= CRED_GOAL ? "District goal met in " + top + " — credential badge earned." : (CRED_GOAL - v) + " points to the district credential goal in " + top + "."}</p>`; })()}
-      </div>
+      ${avModule(s)}
 `;
 }
 
@@ -2921,9 +3113,6 @@ function viewMyDurableSkills(){
       <h1 class="page-title">My Durable Skills</h1>
       <p class="page-sub">Your skills summary report. The newest assessment always shows first.</p>
     </div>
-    <select class="filter-select" id="sdCycle" style="margin-top:6px">
-      ${Object.keys(SD_DATA).map(c => `<option${c === sdCycleSel ? " selected" : ""}>${c}</option>`).join("")}
-    </select>
   </div>
   ${saState.complete ? "" : `
   <div class="sdh-cta" data-nav="#/student-assessment" style="margin-bottom:16px">
@@ -2935,6 +3124,9 @@ function viewMyDurableSkills(){
   <div class="card section-card">
     <div class="section-head">
       <h2 class="section-title" style="font-size:16px">Skills Summary — ${sdCycleSel}</h2>
+      <select class="filter-select" id="sdCycle">
+        ${Object.keys(SD_DATA).map(c => `<option${c === sdCycleSel ? " selected" : ""}>${c}</option>`).join("")}
+      </select>
     </div>
     <div class="trend-ranges">${RANGES.map(r => `<span>${r}</span>`).join("")}</div>
     ${COMPS.map(c => {
@@ -3279,7 +3471,7 @@ function viewMyFeedback(){
     <span class="section-hint">Try it yourself in the MAV panel</span></div>
     <div class="mav-thread" style="max-width:640px">
       <div class="mav-msg bot">Tell me what you did for summer work, fun, or vacation to help build your skills credentials and Graduate Profile alignment.</div>
-      <div class="mav-msg user">I was a lifeguard at the town pool. I spoke with kids, families, my boss, and coworkers.</div>
+      <div class="mav-msg user">I worked at the local ice cream stand, interacting with customers, co-workers, and managers. Some days I worked the window taking orders; other days I was on the line making cones, shakes, and sundaes.</div>
       <div class="mav-msg bot">Awesome! Sounds like you used communication skills, teamwork and adaptability. Time management too.</div>
       <div class="mav-msg bot">I am going to ask you a few more things and then add up the points you accrue during your summer job. Nice work!</div>
     </div>
@@ -3749,8 +3941,12 @@ function wireView(){
   document.querySelectorAll("#view [data-period]").forEach(el => {
     el.addEventListener("click", () => {
       const p = el.dataset.period;
-      if (p === "Oct 2026") return; /* the current cycle always shows */
+      const others = PERIODS.filter(x => x !== "Oct 2026");
+      /* R5: Current can only be unchecked while another cycle is checked */
+      if (p === "Oct 2026" && !others.some(x => trendCycles[x])) return;
       trendCycles[p] = !trendCycles[p];
+      /* R5: unchecking the last remaining cycle re-checks Current */
+      if (!PERIODS.some(x => trendCycles[x])) trendCycles["Oct 2026"] = true;
       render();
     });
   });
@@ -3774,8 +3970,18 @@ function wireView(){
   document.querySelectorAll("#view [data-gpyear]").forEach(el => {
     el.addEventListener("click", () => { gpTrendYear = el.dataset.gpyear; render(); });
   });
+  const avAll = document.getElementById("avReviewAll");
+  if (avAll) avAll.addEventListener("click", () => {
+    studentFilters = { status: "Active", credComp: AV_PENDING };
+    studentFiltersFromMav = false;
+    location.hash = "#/students";
+  });
   const amBtn = document.getElementById("amGen");
   if (amBtn) amBtn.addEventListener("click", () => { amGen = true; render(); });
+  /* staff student view — Awaiting Verification tabs (R5) */
+  document.querySelectorAll("#view [data-avtab]").forEach(el => {
+    el.addEventListener("click", () => { avTab = el.dataset.avtab; render(); });
+  });
   /* staff student view — assessment date chips (R1 E1) */
   const scs = document.getElementById("stuCycleSel");
   if (scs) scs.addEventListener("change", () => { stuCycle = scs.value; render(); });
@@ -3811,7 +4017,8 @@ function wireView(){
         if (snap.gradYear && s.gradYear !== snap.gradYear) return false;
         if (snap.school && s.school !== snap.school) return false;
         if (snap.gpMin && gpOverall(s) <= snap.gpMin) return false;
-        if (snap.credComp && credTop(s) !== snap.credComp) return false;
+        if (snap.credComp === AV_PENDING) { if (avCount(s) === 0) return false; }
+        else if (snap.credComp && credTop(s) !== snap.credComp) return false;
         if (snap.competency && snap.proficiency && rangeOf(scoresFor(s, snap.assessDate || "Oct 2026")[snap.competency]) !== snap.proficiency) return false;
         return true;
       } });
@@ -3914,7 +4121,7 @@ function resetToDefaults(){
   studentFiltersFromMav = false;
   trendCycles = { "Oct 2026": true, "May 2026": false, "Oct 2025": false, "May 2025": false };
   trendYear = "All"; trendRowAll = {}; gpTrendYear = "All";
-  cbOpen = false; compInfoOpen = null; sbTab = "English"; sbOpen = null;
+  cbOpen = false; compInfoOpen = null; sbTab = "English"; sbOpen = null; avTab = AV_PENDING;
   pdgSel = ["All Students"]; ckSubj = "English"; ckNotes = false; ckQs = false;
 }
 document.querySelectorAll(".sidebar .nav-item").forEach(el => {
@@ -4167,7 +4374,7 @@ const I18N_ES = {
 "A conversation with MAV": "Una conversación con MAV",
 "Try it yourself in the MAV panel": "Pruébalo tú mismo en el panel de MAV",
 "Tell me what you did for summer work, fun, or vacation to help build your skills credentials and Graduate Profile alignment.": "Cuéntame qué hiciste en tu trabajo de verano, por diversión o en vacaciones para ayudar a construir tus credenciales de habilidades y tu alineación con el Perfil del Graduado.",
-"I was a lifeguard at the town pool. I spoke with kids, families, my boss, and coworkers.": "Fui salvavidas en la piscina del pueblo. Hablé con niños, familias, mi jefe y mis compañeros de trabajo.",
+"I worked at the local ice cream stand, interacting with customers, co-workers, and managers. Some days I worked the window taking orders; other days I was on the line making cones, shakes, and sundaes.": "Trabajé en la heladería local, interactuando con clientes, compañeros de trabajo y gerentes. Algunos días atendía la ventanilla tomando pedidos; otros días estaba en la línea preparando conos, batidos y copas de helado.",
 "Awesome! Sounds like you used communication skills, teamwork and adaptability. Time management too.": "¡Excelente! Parece que usaste habilidades de comunicación, trabajo en equipo y adaptabilidad. También manejo del tiempo.",
 "I am going to ask you a few more things and then add up the points you accrue during your summer job. Nice work!": "Te voy a preguntar algunas cosas más y luego sumaré los puntos que acumulaste durante tu trabajo de verano. ¡Buen trabajo!",
 "Nothing here is a test or a grade.": "Nada de esto es un examen ni una calificación.",
@@ -4194,7 +4401,7 @@ const I18N_ES = {
 "Replaying a chat re-runs its prompts against current district data.": "Reproducir un chat vuelve a ejecutar sus preguntas con los datos actuales del distrito.",
 "Conversations are preserved per staff member and follow district retention policy.": "Las conversaciones se conservan por usuario y siguen la política de retención del distrito.",
 "Your recent conversations with MAV — select one to replay it": "Tus conversaciones recientes con MAV — selecciona una para reproducirla",
-"My summer job — lifeguard": "Mi trabajo de verano — salvavidas",
+"My summer job — ice cream stand": "Mi trabajo de verano — la heladería",
 "Yesterday · 4 messages": "Ayer · 4 mensajes",
 "What's next for my credentials": "Qué sigue para mis credenciales",
 "Oct 1 · 2 messages": "1 oct · 2 mensajes",

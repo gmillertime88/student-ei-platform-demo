@@ -371,7 +371,8 @@ function check(name, cond) {
   await page.click('a[data-route="my-feedback"]'); await page.waitForTimeout(150);
   vtext = await page.textContent("#view");
   check("feedback page", vtext.includes("Share feedback that helps you grow"));
-  check("feedback: conversation demo", vtext.includes("lifeguard at the town pool") && vtext.includes("communication skills, teamwork and adaptability"));
+  check("feedback: conversation demo (R5 ice cream stand)", vtext.includes("local ice cream stand") && vtext.includes("cones, shakes, and sundaes") && vtext.includes("communication skills, teamwork and adaptability"));
+  check("R5: lifeguard copy fully removed", !vtext.toLowerCase().includes("lifeguard"));
   check("feedback: mic removed", !vtext.toLowerCase().includes("record with your voice"));
   await shot("17-feedback");
 
@@ -383,7 +384,7 @@ function check(name, cond) {
   check("student new chat cards", vtext.includes("What can I help you with, Sofia?") && vtext.includes("What do I need to do next?"));
   await page.evaluate(() => { location.hash = "#/chats"; }); await page.waitForTimeout(200);
   vtext = await page.textContent("#view");
-  check("student chats list", vtext.includes("My summer job — lifeguard"));
+  check("student chats list (R5 ice cream stand)", vtext.includes("My summer job — ice cream stand") && !vtext.toLowerCase().includes("lifeguard"));
   const navVis = await page.evaluate(() => ({ nc: document.getElementById("navNewChat").style.display, ch: document.getElementById("navChats").style.display }));
   check("student sees New Chat + Chats tabs", navVis.nc !== "none" && navVis.ch !== "none");
   await page.evaluate(() => { location.hash = "#/my-dashboard"; }); await page.waitForTimeout(160);
@@ -660,6 +661,118 @@ function check(name, cond) {
   for (let i = 0; i < 3; i++) { await page4.selectOption("#langSel", "es"); await page4.waitForTimeout(160); await page4.selectOption("#langSel", "en"); await page4.waitForTimeout(160); }
   enSnap = await page4.evaluate(() => ({ ask: document.querySelector("#mavChipsWrap .mav-label").textContent.trim(), ph: document.getElementById("mavInput").placeholder }));
   check("R4: repeated switching still ends in English", enSnap.ask === "Ask MAV" && enSnap.ph === "Ask MAV about your skills...");
+
+  /* ---------------- R5 (Tyler, edits post 8/26 meeting) ---------------- */
+  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(350);
+  vtext = await page.textContent("#view");
+  check("R5: Current Assessment Cycle box removed", !vtext.includes("Current Assessment Cycle") && !vtext.includes("Cycle Completion"));
+  // R5b · the district-wide Awaiting Verification queue Tyler asked for in its place
+  check("R5b: home Awaiting Verification module present", await page.isVisible("#view table.av-home"));
+  check("R5b: header count matches the district total", await page.evaluate(() => {
+    const pill = document.querySelector("#view .section-card .live-pill");
+    return pill && pill.textContent.trim() === avPendingTotal() + " awaiting sign-off";
+  }));
+  const homeQ = await page.evaluate(() => [...document.querySelectorAll("#view table.av-home tbody tr")].map(tr => ({
+    stu: tr.querySelector(".cell-name b").textContent.trim(),
+    act: tr.querySelector(".av-act").textContent.trim(),
+    when: tr.children[3].textContent.trim()
+  })));
+  check("R5b: six rows in the home queue", homeQ.length === 6);
+  check("R5b: no student repeats", new Set(homeQ.map(r => r.stu)).size === homeQ.length);
+  check("R5b: no activity repeats", new Set(homeQ.map(r => r.act)).size === homeQ.length);
+  check("R5b: no duplicate timestamps", new Set(homeQ.map(r => r.when)).size === homeQ.length);
+  check("R5b: queue is newest first", await page.evaluate(() => {
+    const q = avDistrictQueue(6).map(x => avTime(x.s, x.r, x.i).getTime());
+    return q.every((t, i) => i === 0 || t <= q[i - 1]);
+  }));
+  check("R5b: only students with pending items appear", await page.evaluate(() =>
+    avDistrictQueue(6).every(x => avCount(x.s) > 0 && canSee(x.s))));
+  check("R5b: a parent submitter carries the student's surname", await page.evaluate(() => {
+    const s = STUDENTS.find(x => avPendingFor(x).some(y => y.r.src === "Parent Entry"));
+    const row = avPendingFor(s).find(y => y.r.src === "Parent Entry");
+    return avBy(s, row.r).endsWith(" " + s.last);
+  }));
+  await shot("33-r5b-home-queue");
+  await page.evaluate(() => document.querySelector("#view table.av-home tbody tr").click()); await page.waitForTimeout(320);
+  check("R5b: a queue row opens that student's record", page.url().includes("#/student/"));
+  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(320);
+  await page.evaluate(() => document.getElementById("avReviewAll").click()); await page.waitForTimeout(350);
+  check("R5b: Review all applies the Awaiting Verification filter on Students", await page.evaluate(() =>
+    location.hash.includes("students") && studentFilters.credComp === AV_PENDING));
+  check("R5b: Sofia still matches Tyler's printed mock", await page.evaluate(() => {
+    const s = getStudent(4), rows = avPendingFor(s);
+    return rows.length === 4
+      && rows.map(x => x.r.act).join("|") === "Summer Job|Club|Student Council|Volunteer"
+      && avWhen(s, rows[0].r, rows[0].i) === "May 22, 2025 2:14 PM"
+      && avWhen(s, rows[3].r, rows[3].i) === "May 17, 2025 11:52 AM";
+  }));
+  await page.evaluate(() => { studentFilters = { status: "Active" }; location.hash = "#/home"; }); await page.waitForTimeout(300);
+  vtext = await page.textContent("#view");
+  check("R5: competency trend still on home", vtext.includes("Competency Trend"));
+  const cyc = async () => page.evaluate(() => ({ ...trendCycles }));
+  const chip = async p => page.evaluate(v => document.querySelector('#view [data-period="' + v + '"]').click(), p);
+  let cs = await cyc();
+  check("R5: Current starts checked, others off", cs["Oct 2026"] && !cs["May 2026"] && !cs["Oct 2025"] && !cs["May 2025"]);
+  await chip("Oct 2026"); await page.waitForTimeout(200); cs = await cyc();
+  check("R5: Current cannot be unchecked when it is the only cycle", cs["Oct 2026"] === true);
+  await chip("May 2026"); await page.waitForTimeout(200);
+  await chip("Oct 2026"); await page.waitForTimeout(200); cs = await cyc();
+  check("R5: Current can be unchecked once another cycle is checked", cs["Oct 2026"] === false && cs["May 2026"] === true);
+  await chip("May 2026"); await page.waitForTimeout(200); cs = await cyc();
+  check("R5: unchecking the last cycle re-checks Current", cs["Oct 2026"] === true && !cs["May 2026"]);
+  await page.evaluate(() => { document.getElementById("trendClear").click(); }); await page.waitForTimeout(250);
+
+  // R5-3 · Awaiting Verification filter on Students
+  await page.evaluate(() => { location.hash = "#/students"; }); await page.waitForTimeout(320);
+  const credOpts = await page.$$eval("#fCred option", els => els.map(e => e.textContent.trim()));
+  check("R5: Awaiting Verification is the top Credentials option", credOpts[1] === "Awaiting Verification");
+  const beforeN = await page.$$eval("#view table.data tbody tr", r => r.length);
+  await page.selectOption("#fCred", "Awaiting Verification"); await page.waitForTimeout(320);
+  const afterRows = await page.$$eval("#view table.data tbody tr td:nth-child(5)", r => r.map(e => e.textContent.trim()));
+  check("R5: filter narrows the list", afterRows.length > 0 && afterRows.length < beforeN);
+  check("R5: Credentials column reads Awaiting Verification", afterRows.every(t => t.startsWith("Awaiting Verification")));
+  check("R5: filter chip shows Awaiting Verification", (await page.textContent("#view")).includes("Awaiting Verification"));
+  check("R5: only students with pending items are listed", await page.evaluate(() =>
+    filteredStudents().filter(canSee).every(s => avCount(s) > 0)));
+  await shot("30-r5-awaiting-filter");
+  await page.evaluate(() => { document.querySelector('#view [data-clear="all"]').click(); }); await page.waitForTimeout(250);
+
+  // R5-4 · Awaiting Verification module on the staff student record (Sofia, id 4)
+  await page.evaluate(() => { location.hash = "#/student/4"; }); await page.waitForTimeout(380);
+  vtext = await page.textContent("#view");
+  check("R5: Credential Progress card removed from staff student view", !vtext.includes("Credential Progress"));
+  check("R5: Awaiting Verification module present", vtext.includes("Awaiting Verification (4)") && vtext.includes("Accepted (1)") && vtext.includes("Add Feedback"));
+  check("R5: module rows match the mock", vtext.includes("Ice Cream Shop") && vtext.includes("Student Council") && vtext.includes("Animal Shelter") && vtext.includes("Student Entry") && vtext.includes("Parent Entry"));
+  check("R5: module pagination", vtext.includes("1 – 4 of 4"));
+  check("R5: module rows are not clickable", await page.evaluate(() =>
+    getComputedStyle(document.querySelector("#view table.data.av tbody tr")).cursor === "default"));
+  await shot("31-r5-awaiting-module");
+  await page.evaluate(() => { document.querySelector('#view [data-avtab="Accepted"]').click(); }); await page.waitForTimeout(280);
+  vtext = await page.textContent("#view");
+  check("R5: Accepted tab shows the coach entry", vtext.includes("Football") && vtext.includes("Coach Entry") && vtext.includes("1 – 1 of 1") && !vtext.includes("Ice Cream Shop"));
+  await page.evaluate(() => { document.querySelector('#view [data-avtab="Add Feedback"]').click(); }); await page.waitForTimeout(280);
+  vtext = await page.textContent("#view");
+  check("R5: Add Feedback tab", vtext.includes("Add Feedback for This Student") && ["Faculty","Classmate","Parent","Other"].every(b => vtext.includes(b)));
+  await page.evaluate(() => { document.querySelector('#view [data-avtab="Awaiting Verification"]').click(); }); await page.waitForTimeout(250);
+  check("R5: student with no pending items gets an empty queue", await page.evaluate(async () => {
+    location.hash = "#/student/3"; return true;
+  }) && await (async () => { await page.waitForTimeout(320); const t = await page.textContent("#view");
+    return t.includes("Awaiting Verification (0)") && t.includes("Nothing in this queue"); })());
+
+  // R5-5 · student dashboard cycle dropdown lives in the Skills Summary card
+  await page2.evaluate(() => { location.hash = "#/my-durable-skills"; }); await page2.waitForTimeout(350);
+  check("R5: cycle dropdown sits in the Skills Summary card header", await page2.evaluate(() => {
+    const sel = document.getElementById("sdCycle");
+    if (!sel) return false;
+    const head = sel.closest(".section-head");
+    return !!head && !sel.closest(".page-head") && /Skills Summary/.test(head.textContent);
+  }));
+  check("R5: cycle dropdown still switches cycles", await (async () => {
+    await page2.selectOption("#sdCycle", "October 2025"); await page2.waitForTimeout(250);
+    return (await page2.textContent("#view")).includes("Skills Summary — October 2025");
+  })());
+  await page2.selectOption("#sdCycle", "May 2026"); await page2.waitForTimeout(200);
+  await page2.screenshot({ path: path.join(__dirname, "shots", "32-r5-sd-cycle.png") });
 
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));
