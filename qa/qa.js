@@ -218,7 +218,7 @@ function check(name, cond) {
   await page.evaluate(() => { BENCHMARKS.pop(); }); // leave state clean for later benchmark checks
   await page.evaluate(() => { location.hash = "#/student/4"; }); await page.waitForTimeout(200);
   vtext = await page.textContent("#view");
-  check("student header: GPA + tallies + GP alignment", vtext.includes("GPA") && vtext.includes("Credential Tallies") && vtext.includes("Graduate Profile Alignment"));
+  check("student header: GPA + credential progress + GP alignment (R6 rename)", vtext.includes("GPA") && vtext.includes("Credential Progress") && vtext.includes("Graduate Profile Alignment") && !vtext.includes("Tallies"));
   check("student header: Sofia printed numbers", vtext.includes("Algebra") && vtext.includes("240 of 500") && vtext.includes("Empowered Learner"));
   check("student view: cycle dropdown mirrors the student view (R3)", (await page.$$eval("#stuCycleSel option", els => els.length)) === 4);
   const scoreBefore = await page.evaluate(() => scoresFor(getStudent(4), "Oct 2026")["Communication"]);
@@ -234,6 +234,8 @@ function check(name, cond) {
   vtext = await page.textContent("#view");
   check("credentials: library card + tabs", vtext.includes("Skills Builder Library") && vtext.includes("Social Studies") && vtext.includes("My Library"));
   check("credentials: student table removed", !vtext.includes("Student Credential Points"));
+  check("R6: library opens on My Library, not English", await page.evaluate(() => sbTab === "My Library"));
+  await page.click('[data-sbtab="English"]'); await page.waitForTimeout(200);   // R6: English is no longer the default tab
   await page.click('[data-sb="English:0"]'); await page.waitForTimeout(180);
   vtext = await page.textContent("#view");
   check("credentials: English entry expands with doc content", vtext.includes("Teacher Cliff Notes") && vtext.includes("Know your message") && vtext.includes("How did curiosity help you prepare"));
@@ -666,21 +668,23 @@ function check(name, cond) {
   await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(350);
   vtext = await page.textContent("#view");
   check("R5: Current Assessment Cycle box removed", !vtext.includes("Current Assessment Cycle") && !vtext.includes("Cycle Completion"));
-  // R5b · the district-wide Awaiting Verification queue Tyler asked for in its place
-  check("R5b: home Awaiting Verification module present", await page.isVisible("#view table.av-home"));
-  check("R5b: header count matches the district total", await page.evaluate(() => {
-    const pill = document.querySelector("#view .section-card .live-pill");
-    return pill && pill.textContent.trim() === avPendingTotal() + " awaiting sign-off";
+  /* R5b · the home queue was REMOVED in R6 at Tyler's request (his superintendent wants
+     durable skills, Portrait and credentials on the landing page). The module and its data
+     helpers are kept intact so it can be restored with one call, so the logic stays under
+     test even though nothing renders it on Home today. */
+  check("R5b/R6: home queue no longer renders on Home", !(await page.isVisible("#view table.av-home").catch(() => false)));
+  check("R5b: queue helper still returns six distinct students", await page.evaluate(() => {
+    const q = avDistrictQueue(6);
+    return q.length === 6 && new Set(q.map(x => x.s.id)).size === 6;
   }));
-  const homeQ = await page.evaluate(() => [...document.querySelectorAll("#view table.av-home tbody tr")].map(tr => ({
-    stu: tr.querySelector(".cell-name b").textContent.trim(),
-    act: tr.querySelector(".av-act").textContent.trim(),
-    when: tr.children[3].textContent.trim()
-  })));
-  check("R5b: six rows in the home queue", homeQ.length === 6);
-  check("R5b: no student repeats", new Set(homeQ.map(r => r.stu)).size === homeQ.length);
-  check("R5b: no activity repeats", new Set(homeQ.map(r => r.act)).size === homeQ.length);
-  check("R5b: no duplicate timestamps", new Set(homeQ.map(r => r.when)).size === homeQ.length);
+  check("R5b: no activity repeats", await page.evaluate(() => {
+    const q = avDistrictQueue(6);
+    return new Set(q.map(x => x.r.act)).size === q.length;
+  }));
+  check("R5b: no duplicate timestamps", await page.evaluate(() => {
+    const q = avDistrictQueue(6);
+    return new Set(q.map(x => avWhen(x.s, x.r, x.i))).size === q.length;
+  }));
   check("R5b: queue is newest first", await page.evaluate(() => {
     const q = avDistrictQueue(6).map(x => avTime(x.s, x.r, x.i).getTime());
     return q.every((t, i) => i === 0 || t <= q[i - 1]);
@@ -692,13 +696,6 @@ function check(name, cond) {
     const row = avPendingFor(s).find(y => y.r.src === "Parent Entry");
     return avBy(s, row.r).endsWith(" " + s.last);
   }));
-  await shot("33-r5b-home-queue");
-  await page.evaluate(() => document.querySelector("#view table.av-home tbody tr").click()); await page.waitForTimeout(320);
-  check("R5b: a queue row opens that student's record", page.url().includes("#/student/"));
-  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(320);
-  await page.evaluate(() => document.getElementById("avReviewAll").click()); await page.waitForTimeout(350);
-  check("R5b: Review all applies the Awaiting Verification filter on Students", await page.evaluate(() =>
-    location.hash.includes("students") && studentFilters.credComp === AV_PENDING));
   check("R5b: Sofia still matches Tyler's printed mock", await page.evaluate(() => {
     const s = getStudent(4), rows = avPendingFor(s);
     return rows.length === 4
@@ -706,6 +703,13 @@ function check(name, cond) {
       && avWhen(s, rows[0].r, rows[0].i) === "May 22, 2025 2:14 PM"
       && avWhen(s, rows[3].r, rows[3].i) === "May 17, 2025 11:52 AM";
   }));
+  check("R5b: Tyler Brooks (the record his doc names) shows the full mock", await page.evaluate(() => {
+    const s = STUDENTS.find(x => x.first === "Tyler" && x.last === "Brooks");
+    return s && avCount(s) === 4
+      && avPendingFor(s).map(x => x.r.act).join("|") === "Summer Job|Club|Student Council|Volunteer";
+  }));
+  check("R5b: every roster student is reachable without an empty queue surprise", await page.evaluate(() =>
+    STUDENTS.filter(canSee).filter(s => avCount(s) > 0).length >= 12));
   await page.evaluate(() => { studentFilters = { status: "Active" }; location.hash = "#/home"; }); await page.waitForTimeout(300);
   vtext = await page.textContent("#view");
   check("R5: competency trend still on home", vtext.includes("Competency Trend"));
@@ -740,7 +744,8 @@ function check(name, cond) {
   // R5-4 · Awaiting Verification module on the staff student record (Sofia, id 4)
   await page.evaluate(() => { location.hash = "#/student/4"; }); await page.waitForTimeout(380);
   vtext = await page.textContent("#view");
-  check("R5: Credential Progress card removed from staff student view", !vtext.includes("Credential Progress"));
+  check("R5: Credential Progress card removed from staff student view", await page.evaluate(() =>
+    ![...document.querySelectorAll("#view .section-title")].some(e => e.textContent.trim() === "Credential Progress")));
   check("R5: Awaiting Verification module present", vtext.includes("Awaiting Verification (4)") && vtext.includes("Accepted (1)") && vtext.includes("Add Feedback"));
   check("R5: module rows match the mock", vtext.includes("Ice Cream Shop") && vtext.includes("Student Council") && vtext.includes("Animal Shelter") && vtext.includes("Student Entry") && vtext.includes("Parent Entry"));
   check("R5: module pagination", vtext.includes("1 – 4 of 4"));
@@ -773,6 +778,111 @@ function check(name, cond) {
   })());
   await page2.selectOption("#sdCycle", "May 2026"); await page2.waitForTimeout(200);
   await page2.screenshot({ path: path.join(__dirname, "shots", "32-r5-sd-cycle.png") });
+
+  /* ---------------- R6 (Tyler, post-BOCES superintendent meeting) ---------------- */
+  // R6-1 · library opens on My Library
+  await page.evaluate(() => { resetToDefaults && resetToDefaults(); location.hash = "#/credentials"; }); await page.waitForTimeout(400);
+  check("R6: Skills Builder library defaults to My Library", await page.evaluate(() => sbTab === "My Library"));
+
+  // R6-2 · Tallies retired everywhere on screen
+  check("R6: the word Tallies is gone from the credentials page", !(await page.textContent("#view")).includes("Tallies"));
+
+  // R6-3/4 · Educator Input tab and the 2/1/0 grid
+  check("R6: Educator Input tab present beside My Library", await page.evaluate(() =>
+    SB_TABS[SB_TABS.length - 1] === "Educator Input" && !!document.querySelector('#view [data-sbtab="Educator Input"]')));
+  await page.evaluate(() => document.querySelector('#view [data-sbtab="Educator Input"]').click()); await page.waitForTimeout(350);
+  vtext = await page.textContent("#view");
+  check("R6: grid renders with the five competencies", await page.evaluate(() => {
+    const th = [...document.querySelectorAll("#view table.edu thead th")].map(e => e.textContent.trim().replace(/\s+/g, " "));
+    return th.length === 7 && COMPS.every(c => th.some(t => t.startsWith(c)));
+  }));
+  check("R6: ten student rows", await page.$$eval("#view table.edu tbody tr", r => r.length === 10));
+  check("R6: grid fits without horizontal overflow at 1440", await page.evaluate(() => {
+    const t = document.querySelector("#view table.edu");
+    return t.scrollWidth <= t.parentElement.clientWidth + 1;
+  }));
+  // scoring is one value per student per skill, and clicking again clears it
+  const firstBox = '#view table.edu tbody tr:first-child [data-edu$="::Self-Management::2"]';
+  await page.evaluate(sel => document.querySelector(sel).click(), firstBox); await page.waitForTimeout(220);
+  check("R6: a box scores the student", await page.evaluate(() => Object.values(eduScores).filter(v => v === 2).length >= 1));
+  await page.evaluate(sel => document.querySelector(sel.replace("::2", "::1")).click(), firstBox); await page.waitForTimeout(220);
+  check("R6: only one value per student per skill", await page.evaluate(() => {
+    const s = eduStudents()[0];
+    return eduScores[eduKey(s, "Self-Management")] === 1
+      && document.querySelectorAll('#view table.edu tbody tr:first-child [data-edu$="::Self-Management::"] .on').length === 0;
+  }));
+  await page.evaluate(sel => document.querySelector(sel.replace("::2", "::1")).click(), firstBox); await page.waitForTimeout(220);
+  check("R6: clicking a checked box clears it", await page.evaluate(() => {
+    const s = eduStudents()[0];
+    return eduScores[eduKey(s, "Self-Management")] === undefined;
+  }));
+  // set-all for a row
+  await page.evaluate(() => document.querySelector('#view table.edu tbody tr:first-child [data-eduall$="::2"]').click()); await page.waitForTimeout(250);
+  check("R6: set all scores every competency in the row", await page.evaluate(() => {
+    const s = eduStudents()[0];
+    return COMPS.every(c => eduScores[eduKey(s, c)] === 2) && eduScored(s) === 5;
+  }));
+  await page.evaluate(() => document.querySelector('#view table.edu tbody tr:first-child [data-eduall$="::x"]').click()); await page.waitForTimeout(250);
+  check("R6: clear empties the row", await page.evaluate(() => eduScored(eduStudents()[0]) === 0));
+  await shot("34-r6-educator-input");
+  // the caret drill-down Greg approved in place of a wider grid
+  await page.evaluate(() => document.querySelector('#view table.edu thead [data-eduopen="Self-Management"]').click()); await page.waitForTimeout(320);
+  check("R6: caret drills into that competency's sub-skills", await page.evaluate(() => {
+    const th = [...document.querySelectorAll("#view table.edu thead th")].map(e => e.textContent.trim());
+    return eduOpen === "Self-Management" && EDU_SUB["Self-Management"].every(k => th.includes(k)) && th.length === 6;
+  }));
+  check("R6: every sub-skill comes from COMP_INFO, none invented", await page.evaluate(() =>
+    COMPS.every(c => EDU_SUB[c].every(k => COMP_INFO[c].subskills.includes(k)))));
+  check("R6: Attention to Detail maps to Self-Management as Tyler specified", await page.evaluate(() =>
+    eduParentOf("Attention to Detail") === "Self-Management"));
+  check("R6: drill-down also fits without overflow", await page.evaluate(() => {
+    const t = document.querySelector("#view table.edu");
+    return t.scrollWidth <= t.parentElement.clientWidth + 1;
+  }));
+  await page.evaluate(() => document.querySelector('#view table.edu tbody tr:first-child [data-edu$="::Time Management::2"]').click()); await page.waitForTimeout(250);
+  check("R6: a sub-skill rating rolls up to its parent competency", await page.evaluate(() => {
+    const s = eduStudents()[0];
+    return eduScores[eduKey(s, "Time Management")] === 2 && eduScored(s) === 1;
+  }));
+  await shot("35-r6-subskill-drilldown");
+  await page.evaluate(() => document.querySelector('#view [data-eduopen=""]').click()); await page.waitForTimeout(300);
+  check("R6: back to all five", await page.evaluate(() => eduOpen === null));
+
+  // R6-5 · credential points by contributor, district view of a student only
+  await page.evaluate(() => { location.hash = "#/student/4"; }); await page.waitForTimeout(400);
+  vtext = await page.textContent("#view");
+  check("R6: contributor breakdown on the staff student record", vtext.includes("Credential Points by Contributor"));
+  check("R6: the three contributors always sum to the existing total", await page.evaluate(() =>
+    STUDENTS.every(s => COMPS.every(c => {
+      const v = credSplit(s, c);
+      return v.student + v.educator + v.other === credTally(s, c) && v.student >= 0 && v.educator >= 0 && v.other >= 0;
+    }))));
+  check("R6: Sofia's published totals are untouched", await page.evaluate(() => {
+    const s = getStudent(4);
+    return credTally(s, "Self-Management") === 240 && credTally(s, "Creativity") === 325 && credTally(s, "Communication") === 220;
+  }));
+  await shot("36-r6-contributor-split");
+  await page2.evaluate(() => { location.hash = "#/my-dashboard"; }); await page2.waitForTimeout(350);
+  check("R6: breakdown stays off the student's own dashboard", !(await page2.textContent("#view")).includes("by Contributor"));
+
+  // R6-6/7/8 · home page composition
+  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(400);
+  vtext = await page.textContent("#view");
+  check("R6: Awaiting Verification removed from Home", !vtext.includes("awaiting sign-off") && !(await page.isVisible("#view table.av-home").catch(() => false)));
+  check("R6: Percentage of District Goal now on Home", vtext.includes("Percentage of District Goal"));
+  check("R6: home order is Trend, Percentage of Goal, Graduate Profile", await page.evaluate(() => {
+    const t = [...document.querySelectorAll("#view .section-title")].map(e => e.textContent.trim());
+    const i = t.findIndex(x => x.startsWith("Competency Trend"));
+    const j = t.indexOf("Percentage of District Goal");
+    const k = t.indexOf("Graduate Profile");
+    return i > -1 && j > i && k > j;
+  }));
+  check("R6: Awaiting Verification still lives in the Students filter", await page.evaluate(async () => {
+    location.hash = "#/students"; return true;
+  }) && await (async () => { await page.waitForTimeout(350);
+    const o = await page.$$eval("#fCred option", e => e.map(x => x.textContent.trim()));
+    return o[1] === "Awaiting Verification"; })());
+  await shot("37-r6-home");
 
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));

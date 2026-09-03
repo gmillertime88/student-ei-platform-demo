@@ -421,6 +421,36 @@ table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;pa
 .av-box.on::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .av-foot{display:flex;justify-content:flex-end;font-size:12px;color:var(--n500);padding-top:12px}
 .av-fb-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+/* Educator Input grid (R6) */
+.edu-scroll{overflow-x:auto}
+table.data.edu{table-layout:auto;min-width:100%}
+table.data.edu tbody tr{cursor:default}
+table.data.edu tbody tr:hover{background:transparent}
+table.data.edu tbody tr:nth-child(even){background:var(--n100)}
+table.data.edu tbody tr:nth-child(even):hover{background:var(--n100)}
+table.data.edu th,table.data.edu td{padding:9px 6px;font-size:12.5px;white-space:nowrap;vertical-align:top;text-align:center}
+table.data.edu .avatar{display:none}
+table.data.edu .cell-name{gap:0}
+table.data.edu th:first-child,table.data.edu td:first-child,
+table.data.edu th:nth-child(2),table.data.edu td:nth-child(2){text-align:left}
+table.data.edu th:first-child,table.data.edu td:first-child{padding-left:2px}
+table.data.edu th{font-size:10.5px;white-space:normal}
+table.data.edu th .caret-btn{margin-left:4px;vertical-align:middle}
+.edu-cell{display:flex;gap:8px;justify-content:center}
+.edu-opt{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.edu-num{font-size:11px;font-weight:700;color:var(--n500)}
+.edu-box{width:16px;height:16px;border:1.5px solid var(--n200);border-radius:4px;background:var(--surface);cursor:pointer;padding:0;position:relative}
+.edu-box:hover{border-color:var(--primary)}
+.edu-box.on{background:var(--success);border-color:var(--success)}
+.edu-box.on::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.edu-setall{display:flex;align-items:center;gap:3px;margin-top:6px;font-size:10.5px;color:var(--n500)}
+.edu-mini{font-size:11px;font-weight:700;line-height:1;padding:3px 5px;border:1px solid var(--n200);background:var(--surface);color:var(--n700);border-radius:var(--r-sm);cursor:pointer;min-width:18px}
+.edu-mini:hover{border-color:var(--primary);color:var(--primary)}
+.edu-mini.clear{font-weight:600;color:var(--n500)}
+.edu-drill{margin-bottom:12px}
+table.data.csplit th,table.data.csplit td{text-align:right;white-space:nowrap}
+table.data.csplit th:first-child,table.data.csplit td:first-child{text-align:left;width:34%}
+table.data.csplit tr.csplit-tot td{border-top:2px solid var(--n200)}
 table.data.av.av-home tbody tr{cursor:pointer}
 table.data.av.av-home tbody tr:hover{background:var(--primary-light)}
 table.data.av.av-home th:nth-child(1){width:17%}
@@ -1211,7 +1241,10 @@ const STUDENTS = ROSTER.map((r, i) => {
 /* ---- Awaiting Verification (R5, Tyler 2026-08-28) — student-, parent- and coach-submitted
        activities queued for district verification. Demo data: visual only, no workflow. ---- */
 const AV_PENDING = "Awaiting Verification";
-const AV_N = [0, 4, 2, 0, 4, 3, 0, 2, 0, 1]; /* pending items by student id % 10 — Sofia (id 4) = 4 */
+const AV_N = [4, 4, 2, 0, 4, 3, 0, 2, 0, 1]; /* pending items by student id % 10 */
+/* Records that reproduce Tyler's printed mock exactly: Sofia (id 4) is the flagship demo
+   student, Tyler Brooks (id 10) is the record Tyler names in his own edits doc. */
+const AV_MOCK_IDS = [4, 10];
 function avCount(s){ return AV_N[s.id % 10]; }
 function avAccepted(s){ return avCount(s) > 0 ? 1 : 0; }
 const AV_ROWS = [
@@ -1242,11 +1275,16 @@ const AV_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov
    offset a deterministic number of days so the district queue reads as real traffic. */
 /* A parent shares the student's surname; faculty and coaches are district staff and stay named. */
 function avBy(s, r){ return r.by.startsWith("parent:") ? "Parent · " + r.by.slice(7) + " " + s.last : r.by; }
-function avShift(s, i){ return s.id === 4 ? 0 : (s.id * 7 + i * 13) % 23 + 1; }
+function avShift(s, i){
+  if (s.id === 4) return 0;                                    /* Sofia keeps Tyler's printed dates */
+  if (AV_MOCK_IDS.includes(s.id)) return (s.id * 7) % 23 + 1;  /* mock records shift as a block, so his order holds */
+  return (s.id * 7 + i * 13) % 23 + 1;
+}
 function avTime(s, r, i){
   const d = new Date(r.iso);
   d.setDate(d.getDate() - avShift(s, i));
-  if (s.id !== 4) d.setMinutes(d.getMinutes() - ((s.id * 17 + i * 29) % 47)); /* Sofia keeps Tyler's exact times */
+  if (s.id !== 4) d.setMinutes(d.getMinutes()
+    - (AV_MOCK_IDS.includes(s.id) ? (s.id * 17) % 47 : (s.id * 17 + i * 29) % 47)); /* Sofia keeps Tyler's exact times */
   return d;
 }
 function avWhen(s, r, i){
@@ -1257,7 +1295,7 @@ function avWhen(s, r, i){
        + h + ":" + String(d.getMinutes()).padStart(2, "0") + " " + ap;
 }
 function avPendingFor(s){
-  const base = s.id === 4 ? 0 : s.id % AV_ROWS.length; /* Sofia pinned to Tyler's four */
+  const base = AV_MOCK_IDS.includes(s.id) ? 0 : s.id % AV_ROWS.length; /* mock records pinned to Tyler's four */
   const rows = [];
   for (let k = 0; k < avCount(s); k++) { const i = (base + k) % AV_ROWS.length; rows.push({ s, r: AV_ROWS[i], i }); }
   return rows.sort((a, b) => avTime(b.s, b.r, b.i) - avTime(a.s, a.r, a.i));
@@ -1557,6 +1595,9 @@ function trendWidth(comp, cycle){
   return Math.max(6, Math.min(100, TREND_W[comp] - TREND_DROP[cycle] + yAdj));
 }
 const AV_HOME_ROWS = 6;
+/* R6: Tyler moved this off Home (his superintendent wants durable skills, Portrait and
+   credentials on the landing page, and sees verification as a counselor task). The
+   module is kept intact so it can be restored with one call in viewHome(). */
 function homeAwaitingVerification(){
   const shown = avDistrictQueue(AV_HOME_ROWS);
   return `
@@ -1718,9 +1759,9 @@ function viewHome(){
 
   ${homeTrend()}
 
-  ${homeGradProfile()}
+  ${pdgModule()}
 
-  ${homeAwaitingVerification()}
+  ${homeGradProfile()}
 
   <div style="margin-bottom:8px">
     <div class="section-head" style="margin-bottom:12px">
@@ -2025,6 +2066,44 @@ function avRowsHtml(s, rows, verified){
   </table>
   <div class="av-foot">1 – ${rows.length} of ${rows.length}</div>`;
 }
+/* ---- R6 · credential points by contributor. Shares are deterministic and always sum to
+       credTally(), so every total already on screen anywhere else is unchanged.
+       Tyler: "that was me plugging in random numbers as visuals". ---- */
+function credSplit(s, comp){
+  const total = credTally(s, comp);
+  const j = COMPS.indexOf(comp);
+  const educator = Math.round(total * (26 + ((s.id * 7 + j * 11) % 13)) / 100);
+  const other    = Math.round(total * (10 + ((s.id * 5 + j * 17) % 9)) / 100);
+  return { student: total - educator - other, educator, other, total };
+}
+function credSplitModule(s){
+  const rows = COMPS.map(c => [c, credSplit(s, c)]);
+  const sum = k => rows.reduce((t, [, v]) => t + v[k], 0);
+  return `
+  <div class="card section-card">
+    <div class="section-head" style="margin-bottom:6px">
+      <h2 class="section-title" style="font-size:16px">Credential Points by Contributor</h2>
+      <span class="section-hint">Where ${s.first}'s points came from</span>
+    </div>
+    <p class="section-hint" style="margin-bottom:14px">Student entries · educator input from faculty such as Ms. Jones · other input from coaches, counselors, parents and mentors.</p>
+    <table class="data av csplit">
+      <thead><tr><th>Competency</th><th>Student</th><th>Educator</th><th>Other</th><th>Total</th></tr></thead>
+      <tbody>
+        ${rows.map(([c, v]) => `
+        <tr>
+          <td class="av-act">${c}</td>
+          <td>${v.student}</td><td>${v.educator}</td><td>${v.other}</td>
+          <td><b>${v.total}</b> <span class="av-sub" style="display:inline">of ${CRED_MAX}</span></td>
+        </tr>`).join("")}
+        <tr class="csplit-tot">
+          <td><b>All competencies</b></td>
+          <td><b>${sum("student")}</b></td><td><b>${sum("educator")}</b></td>
+          <td><b>${sum("other")}</b></td><td><b>${sum("total")}</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`;
+}
 function avModule(s){
   const pending = avPendingFor(s);
   const accepted = avAcceptedFor(s);
@@ -2085,7 +2164,7 @@ function viewStudent(id){
       </div>
     </div>
     <div class="col">
-      <div class="sd-sec-title">Credential Tallies <small style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
+      <div class="sd-sec-title">Credential Progress <small style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
       ${COMPS.map(c => `<div class="stu-hdr-row"><span>${c}</span><b>${credTally(s, c)} of ${CRED_MAX}</b></div>`).join("")}
       ${goalRing(gp, "of the district's<br>Graduate Profile goal")}
     </div>
@@ -2128,14 +2207,103 @@ function viewStudent(id){
     </div>
 
       ${avModule(s)}
+      ${credSplitModule(s)}
 `;
 }
 
 /* ---------- 08 · Credentials — District View (FULL) ---------- */
 /* -- Skills Builder library (R1 F2). English + Sciences from Tyler's Credential QA doc (2026-08-21).
       Math / Social Studies / CTE / Other authored by PT in the same style — flagged Draft for Student EI review. -- */
-const SB_TABS = ["English","Math","Social Studies","Sciences","CTE","Other","My Library"];
-let sbTab = "English";
+const SB_TABS = ["English","Math","Social Studies","Sciences","CTE","Other","My Library","Educator Input"];
+
+/* ---- R6 · Educator Input (Tyler 2026-09-02, from his BOCES superintendent meeting) ----
+   Teachers score each student 2 / 1 / 0 against a Skills Builder. Five competency columns
+   by default so it fits a laptop; the caret on a column drills into that competency's
+   sub-skills, which roll up to the parent (Tyler: "our technology will map the sub-skill
+   back to one of the main 5"). One value per student per skill; click again to clear. ---- */
+const EDU_SUB = {  /* verbatim from COMP_INFO.subskills, four per competency */
+  "Self-Management": ["Time Management","Work Ethic","Attention to Detail","Organized and Orderly"],
+  "Teamwork": ["Collaboration","Accountability","Listening","Empathy"],
+  "Creativity": ["Curiosity","Innovative","Imaginative","Open minded"],
+  "Adaptability": ["Problem solving","Resilience","Flexibility","Growth Mindset"],
+  "Communication": ["Active Listening","Clarity","Articulate","Respectful"]
+};
+const EDU_BUILDER = "Chemistry Lab";
+const EDU_ROWS = 10;
+let eduScores = {};   /* "studentId|skill" -> 2 | 1 | 0 */
+let eduOpen = null;   /* competency drilled into, or null for the five-column view */
+function eduStudents(){
+  return STUDENTS.filter(canSee).slice()
+    .sort((a, b) => (a.last + a.first).localeCompare(b.last + b.first)).slice(0, EDU_ROWS);
+}
+function eduKey(s, skill){ return s.id + "|" + skill; }
+function eduParentOf(skill){
+  if (COMPS.includes(skill)) return skill;
+  for (const c of COMPS) if (EDU_SUB[c].includes(skill)) return c;
+  return null;
+}
+function eduScored(s){ /* how many of the five competencies carry a rating, directly or by roll-up */
+  return COMPS.filter(c => eduScores[eduKey(s, c)] !== undefined
+    || EDU_SUB[c].some(k => eduScores[eduKey(s, k)] !== undefined)).length;
+}
+function eduCellHtml(s, skill){
+  const v = eduScores[eduKey(s, skill)];
+  return `<div class="edu-cell">${[2, 1, 0].map(n => `
+    <label class="edu-opt"><span class="edu-num">${n}</span>
+      <button class="edu-box${v === n ? " on" : ""}" data-edu="${s.id}::${skill}::${n}"
+        role="checkbox" aria-checked="${v === n}" aria-label="${skill} ${n} for ${s.first} ${s.last}"></button>
+    </label>`).join("")}</div>`;
+}
+function eduInputModule(){
+  const students = eduStudents();
+  const cols = eduOpen ? EDU_SUB[eduOpen] : COMPS;
+  return `
+  <div class="card section-card">
+    <div class="section-head" style="margin-bottom:6px">
+      <h2 class="section-title" style="font-size:16px">Educator Input</h2>
+      <span class="section-hint">Ms. Jones · ${EDU_BUILDER} · Chemistry 11</span>
+    </div>
+    <p class="section-hint" style="margin-bottom:14px">
+      Score each student 2, 1 or 0 for this Skills Builder. One value per skill; click a checked box to clear it.
+      ${eduOpen
+        ? `Sub-skill ratings roll up to <b>${eduOpen}</b>.`
+        : `Use the caret on a competency to rate its sub-skills.`}
+    </p>
+    ${eduOpen ? `
+    <div class="edu-drill">
+      <button class="gy-chip on" data-eduopen="">${ICO.caretUp} ${eduOpen} sub-skills · back to all five</button>
+    </div>` : ""}
+    <div class="edu-scroll">
+    <table class="data edu">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Skills Builder</th>
+          ${cols.map(c => `<th>${c}${eduOpen ? "" : `<button class="caret-btn" data-eduopen="${c}" title="Rate ${c} sub-skills" aria-expanded="false">${ICO.caretDown}</button>`}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${students.map(s => `
+        <tr>
+          <td><div class="cell-name"><div class="avatar">${s.initials}</div><b>${s.first} ${s.last}</b></div>
+            <div class="edu-setall"><span>All</span>
+              ${[2, 1, 0].map(n => `<button class="edu-mini" data-eduall="${s.id}::${n}" title="Score every column ${n} for ${s.first}">${n}</button>`).join("")}
+              <button class="edu-mini clear" data-eduall="${s.id}::x" title="Clear all scores for ${s.first}">&times;</button>
+            </div>
+          </td>
+          <td>${EDU_BUILDER}<div class="av-sub">${eduScored(s)} of 5 rated</div></td>
+          ${cols.map(c => `<td>${eduCellHtml(s, c)}</td>`).join("")}
+        </tr>`).join("")}
+      </tbody>
+    </table>
+    </div>
+    <div class="av-foot" style="justify-content:space-between">
+      <span>Educator scores post to the student's credential total once submitted.</span>
+      <span>Showing ${students.length} of 1,284 students</span>
+    </div>
+  </div>`;
+}
+let sbTab = "My Library"; /* R6: Tyler — library opens on My Library */
 let sbOpen = null; /* "tab:index" */
 const SB_LIBRARY = {
   "English": [{
@@ -2479,7 +2647,8 @@ function sbLibraryCard(){
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
       ${SB_TABS.map(t => `<button class="gy-chip ${sbTab === t ? "on" : ""}" data-sbtab="${t}">${t}</button>`).join("")}
     </div>
-    ${sbTab === "My Library" ? `
+    ${sbTab === "Educator Input" ? eduInputModule()
+    : sbTab === "My Library" ? `
       ${SB_TABS.filter(t => t !== "My Library").map(t => `
       <button class="assess-row" data-sbtab="${t}" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:12px 0">
         <span style="flex:1;min-width:0">
@@ -3018,7 +3187,7 @@ function sdHeadCard(){
       </div>
     </div>
     <div class="col">
-      <div class="sd-sec-title">Credential Tallies <small style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
+      <div class="sd-sec-title">Credential Progress <small style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
       ${COMPS.map(c => `<div class="stu-hdr-row"><span>${c}</span><b>${stuTally(c)} of ${CRED_MAX}</b></div>`).join("")}
       ${goalRing(gp, "of your district's<br>Graduate Profile goal")}
     </div>
@@ -3993,6 +4162,30 @@ function wireView(){
   document.querySelectorAll("#view [data-stdcreate]").forEach(el => {
     el.addEventListener("click", () => { sbOpen = el.dataset.stdcreate; render(); });
   });
+  /* R6 · Educator Input grid */
+  document.querySelectorAll("#view [data-edu]").forEach(el => {
+    el.addEventListener("click", () => {
+      const [sid, skill, n] = el.dataset.edu.split("::");
+      const k = sid + "|" + skill, v = Number(n);
+      if (eduScores[k] === v) delete eduScores[k]; else eduScores[k] = v;
+      render();
+    });
+  });
+  document.querySelectorAll("#view [data-eduall]").forEach(el => {
+    el.addEventListener("click", () => {
+      const [sid, n] = el.dataset.eduall.split("::");
+      const cols = eduOpen ? EDU_SUB[eduOpen] : COMPS;
+      cols.forEach(c => { const k = sid + "|" + c; if (n === "x") delete eduScores[k]; else eduScores[k] = Number(n); });
+      render();
+    });
+  });
+  document.querySelectorAll("#view [data-eduopen]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      eduOpen = el.dataset.eduopen || null;
+      render();
+    });
+  });
   document.querySelectorAll("#view [data-sbtab]").forEach(el => {
     el.addEventListener("click", () => { sbTab = el.dataset.sbtab; sbOpen = null; render(); });
   });
@@ -4121,7 +4314,7 @@ function resetToDefaults(){
   studentFiltersFromMav = false;
   trendCycles = { "Oct 2026": true, "May 2026": false, "Oct 2025": false, "May 2025": false };
   trendYear = "All"; trendRowAll = {}; gpTrendYear = "All";
-  cbOpen = false; compInfoOpen = null; sbTab = "English"; sbOpen = null; avTab = AV_PENDING;
+  cbOpen = false; compInfoOpen = null; sbTab = "My Library"; sbOpen = null; avTab = AV_PENDING; eduOpen = null;
   pdgSel = ["All Students"]; ckSubj = "English"; ckNotes = false; ckQs = false;
 }
 document.querySelectorAll(".sidebar .nav-item").forEach(el => {
@@ -4318,7 +4511,7 @@ const I18N_ES = {
 "Graduation Year: 2028": "Año de Graduación: 2028",
 "Student ID: 28675310": "ID de Estudiante: 28675310",
 "Email: s.nguyen@student.delmarcsd.org": "Correo: s.nguyen@student.delmarcsd.org",
-"Credential Tallies": "Conteo de Credenciales",
+"Credential Progress": "Progreso de Credenciales",
 "(District goal 375)": "(Meta del distrito 375)",
 "(District goal 75%)": "(Meta del distrito 75%)",
 "of your district's": "de la meta del",
