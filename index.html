@@ -422,6 +422,16 @@ table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;pa
 .av-foot{display:flex;justify-content:flex-end;font-size:12px;color:var(--n500);padding-top:12px}
 .av-fb-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .nb{white-space:nowrap}  /* R6b: Tyler — the district-goal phrase never splits across lines */
+/* R6c · Add Input CTA and the pending-points delta it produces */
+.edu-cta{margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;
+  padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--n200);
+  background:var(--surface);color:var(--n500);cursor:pointer;white-space:nowrap}
+.edu-cta:disabled{opacity:.55;cursor:default}
+.edu-cta.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.edu-cta.on:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
+.edu-cta.done{background:var(--risk-low-bg);border-color:var(--risk-low-bg);color:var(--risk-low-fg);opacity:1}
+.edu-cta.done svg{width:11px;height:11px}
+.pending{color:var(--risk-med-fg);font-weight:700;font-size:12px}
 /* Educator Input grid (R6) */
 .edu-scroll{overflow-x:auto}
 table.data.edu{table-layout:auto;min-width:100%}
@@ -2080,26 +2090,31 @@ function credSplit(s, comp){
 function credSplitModule(s){
   const rows = COMPS.map(c => [c, credSplit(s, c)]);
   const sum = k => rows.reduce((t, [, v]) => t + v[k], 0);
+  const pend = eduPendingTotal(s);  /* R6c: educator input awaiting verification */
   return `
   <div class="card section-card">
     <div class="section-head" style="margin-bottom:6px">
       <h2 class="section-title" style="font-size:16px">Credential Points by Contributor</h2>
       <span class="section-hint">Where ${s.first}'s points came from</span>
     </div>
-    <p class="section-hint" style="margin-bottom:14px">Student entries · educator input from faculty such as Ms. Jones · other input from coaches, counselors, parents and mentors.</p>
+    <p class="section-hint" style="margin-bottom:14px">Student entries · educator input from faculty such as Ms. Jones · other input from coaches, counselors, parents and mentors.${pend ? ` <b class="pending">+${pend} points pending verification</b> from Educator Input.` : ""}</p>
     <table class="data av csplit">
       <thead><tr><th>Competency</th><th>Student</th><th>Educator</th><th>Other</th><th>Total</th></tr></thead>
       <tbody>
-        ${rows.map(([c, v]) => `
+        ${rows.map(([c, v]) => { const p = eduPendingFor(s, c); return `
         <tr>
           <td class="av-act">${c}</td>
-          <td>${v.student}</td><td>${v.educator}</td><td>${v.other}</td>
-          <td><b>${v.total}</b> <span class="av-sub" style="display:inline">of ${CRED_MAX}</span></td>
-        </tr>`).join("")}
+          <td>${v.student}</td>
+          <td>${v.educator}${p ? ` <span class="pending">+${p}</span>` : ""}</td>
+          <td>${v.other}</td>
+          <td><b>${v.total}</b>${p ? ` <span class="pending">+${p}</span>` : ""} <span class="av-sub" style="display:inline">of ${CRED_MAX}</span></td>
+        </tr>`; }).join("")}
         <tr class="csplit-tot">
           <td><b>All competencies</b></td>
-          <td><b>${sum("student")}</b></td><td><b>${sum("educator")}</b></td>
-          <td><b>${sum("other")}</b></td><td><b>${sum("total")}</b></td>
+          <td><b>${sum("student")}</b></td>
+          <td><b>${sum("educator")}</b>${pend ? ` <span class="pending">+${pend}</span>` : ""}</td>
+          <td><b>${sum("other")}</b></td>
+          <td><b>${sum("total")}</b>${pend ? ` <span class="pending">+${pend}</span>` : ""}</td>
         </tr>
       </tbody>
     </table>
@@ -2231,8 +2246,10 @@ const EDU_SUB = {  /* verbatim from COMP_INFO.subskills, four per competency */
 };
 const EDU_BUILDER = "Chemistry Lab";
 const EDU_ROWS = 10;
-let eduScores = {};   /* "studentId|skill" -> 2 | 1 | 0 */
-let eduOpen = null;   /* competency drilled into, or null for the five-column view */
+let eduScores = {};    /* "studentId|skill" -> 2 | 1 | 0 */
+let eduOpen = null;    /* competency drilled into, or null for the five-column view */
+let eduSubmitted = {}; /* studentId -> { competency: points } snapshot taken on Add Input */
+const EDU_MULT = 2;    /* R6c: same convention as Skills Builder answers, option points x 2 */
 function eduStudents(){
   return STUDENTS.filter(canSee).slice()
     .sort((a, b) => (a.last + a.first).localeCompare(b.last + b.first)).slice(0, EDU_ROWS);
@@ -2246,6 +2263,21 @@ function eduParentOf(skill){
 function eduScored(s){ /* how many of the five competencies carry a rating, directly or by roll-up */
   return COMPS.filter(c => eduScores[eduKey(s, c)] !== undefined
     || EDU_SUB[c].some(k => eduScores[eduKey(s, k)] !== undefined)).length;
+}
+/* R6c · points a row would post. The competency and each of its sub-skills contribute,
+   so rating sub-skills earns more, per Tyler: a more detailed credential for the student. */
+function eduPointsFor(s, c){
+  const one = k => (eduScores[eduKey(s, k)] || 0) * EDU_MULT;
+  return one(c) + EDU_SUB[c].reduce((t, k) => t + one(k), 0);
+}
+function eduRowPoints(s){ return COMPS.reduce((t, c) => t + eduPointsFor(s, c), 0); }
+function eduPendingFor(s, c){ const e = eduSubmitted[s.id]; return e ? (e[c] || 0) : 0; }
+function eduPendingTotal(s){ return COMPS.reduce((t, c) => t + eduPendingFor(s, c), 0); }
+function eduSubmitRow(s){
+  const snap = {};
+  COMPS.forEach(c => { const p = eduPointsFor(s, c); if (p) snap[c] = p; });
+  eduSubmitted[s.id] = snap;
+  return Object.values(snap).reduce((t, v) => t + v, 0);
 }
 function eduCellHtml(s, skill){
   const v = eduScores[eduKey(s, skill)];
@@ -2292,7 +2324,14 @@ function eduInputModule(){
               <button class="edu-mini clear" data-eduall="${s.id}::x" title="Clear all scores for ${s.first}">&times;</button>
             </div>
           </td>
-          <td>${EDU_BUILDER}<div class="av-sub">${eduScored(s)} of 5 rated</div></td>
+          <td>${EDU_BUILDER}<div class="av-sub">${eduScored(s)} of 5 rated</div>
+            ${(() => {
+              const n = eduScored(s), done = !!eduSubmitted[s.id];
+              if (done) return `<button class="edu-cta done" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Input Added</button>`;
+              if (!n) return `<button class="edu-cta" disabled title="Score at least one skill first">Add Input</button>`;
+              return `<button class="edu-cta on" data-eduadd="${s.id}" title="Post ${eduRowPoints(s)} educator points for ${s.first}">Add Input</button>`;
+            })()}
+          </td>
           ${cols.map(c => `<td>${eduCellHtml(s, c)}</td>`).join("")}
         </tr>`).join("")}
       </tbody>
@@ -4170,6 +4209,7 @@ function wireView(){
       const [sid, skill, n] = el.dataset.edu.split("::");
       const k = sid + "|" + skill, v = Number(n);
       if (eduScores[k] === v) delete eduScores[k]; else eduScores[k] = v;
+      delete eduSubmitted[sid]; /* R6c: a changed score re-arms the row */
       render();
     });
   });
@@ -4178,6 +4218,16 @@ function wireView(){
       const [sid, n] = el.dataset.eduall.split("::");
       const cols = eduOpen ? EDU_SUB[eduOpen] : COMPS;
       cols.forEach(c => { const k = sid + "|" + c; if (n === "x") delete eduScores[k]; else eduScores[k] = Number(n); });
+      delete eduSubmitted[sid];
+      render();
+    });
+  });
+  document.querySelectorAll("#view [data-eduadd]").forEach(el => {
+    el.addEventListener("click", () => {
+      const s = getStudent(el.dataset.eduadd);
+      if (!s) return;
+      const pts = eduSubmitRow(s);
+      showToast("+" + pts + " educator points added for " + s.first + " " + s.last + " — pending verification");
       render();
     });
   });
@@ -4316,7 +4366,7 @@ function resetToDefaults(){
   studentFiltersFromMav = false;
   trendCycles = { "Oct 2026": true, "May 2026": false, "Oct 2025": false, "May 2025": false };
   trendYear = "All"; trendRowAll = {}; gpTrendYear = "All";
-  cbOpen = false; compInfoOpen = null; sbTab = "My Library"; sbOpen = null; avTab = AV_PENDING; eduOpen = null;
+  cbOpen = false; compInfoOpen = null; sbTab = "My Library"; sbOpen = null; avTab = AV_PENDING; eduOpen = null; eduScores = {}; eduSubmitted = {};
   pdgSel = ["All Students"]; ckSubj = "English"; ckNotes = false; ckQs = false;
 }
 document.querySelectorAll(".sidebar .nav-item").forEach(el => {

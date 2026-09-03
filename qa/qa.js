@@ -910,6 +910,66 @@ function check(name, cond) {
   await page3.evaluate(() => { location.hash = "#/home"; }); await page3.waitForTimeout(400);
   check("R6b: renamed module reads correctly at 1280", (await page3.textContent("#view")).includes("Credential Progress Percentage"));
 
+  /* ---------------- R6c · Add Input CTA and the pending-points loop ---------------- */
+  await page.evaluate(() => { resetToDefaults && resetToDefaults(); location.hash = "#/credentials"; }); await page.waitForTimeout(420);
+  await page.evaluate(() => document.querySelector('#view [data-sbtab="Educator Input"]').click()); await page.waitForTimeout(350);
+  check("R6c: CTA sits under the rated count in every row", await page.evaluate(() =>
+    document.querySelectorAll("#view table.edu tbody tr .edu-cta").length === 10));
+  check("R6c: CTA is disabled and white before any score", await page.evaluate(() => {
+    const b = document.querySelector("#view table.edu tbody tr:first-child .edu-cta");
+    return b.disabled && !b.classList.contains("on") && b.textContent.trim() === "Add Input";
+  }));
+  const eduSid = await page.evaluate(() => eduStudents()[0].id);
+  await page.evaluate(i => document.querySelector(`#view [data-edu="${i}::Teamwork::2"]`).click(), eduSid); await page.waitForTimeout(300);
+  check("R6c: one score turns the CTA blue and enables it", await page.evaluate(i => {
+    const b = document.querySelector(`#view [data-eduadd="${i}"]`);
+    return !!b && b.classList.contains("on") && !b.disabled;
+  }, eduSid));
+  check("R6c: points follow the Skills Builder convention of option points x 2", await page.evaluate(i =>
+    eduRowPoints(getStudent(i)) === 4, eduSid));
+  await page.evaluate(i => document.querySelector(`#view [data-eduall="${i}::2"]`).click(), eduSid); await page.waitForTimeout(300);
+  check("R6c: a full row is worth 20", await page.evaluate(i => eduRowPoints(getStudent(i)) === 20, eduSid));
+  await page.evaluate(i => document.querySelector(`#view [data-eduadd="${i}"]`).click(), eduSid); await page.waitForTimeout(400);
+  check("R6c: submitting confirms the row", await page.evaluate(i => {
+    const b = document.querySelector("#view table.edu tbody tr:first-child .edu-cta");
+    return b.classList.contains("done") && b.disabled && /Input Added/.test(b.textContent)
+      && eduPendingTotal(getStudent(i)) === 20;
+  }, eduSid));
+  check("R6c: the toast names the student and the points", await page.evaluate(i => {
+    const t = document.getElementById("toast");
+    const s = getStudent(i);
+    return t && t.textContent.includes("+20") && t.textContent.includes(s.last) && /pending verification/.test(t.textContent);
+  }, eduSid));
+  await shot("38-r6c-add-input");
+  // the loop closes on that student's record
+  await page.evaluate(i => { location.hash = "#/student/" + i; }, eduSid); await page.waitForTimeout(450);
+  vtext = await page.textContent("#view");
+  check("R6c: the record shows the pending banner", vtext.includes("+20 points pending verification"));
+  check("R6c: each competency carries its own delta", await page.evaluate(() =>
+    document.querySelectorAll("#view table.csplit .pending").length === COMPS.length * 2 + 2));
+  check("R6c: published totals are NOT altered by pending input", await page.evaluate(i => {
+    const s = getStudent(i);
+    return COMPS.every(c => {
+      const v = credSplit(s, c);
+      return v.student + v.educator + v.other === credTally(s, c);
+    });
+  }, eduSid));
+  check("R6c: Sofia's printed figures still hold with input pending elsewhere", await page.evaluate(() => {
+    const s = getStudent(4);
+    return credTally(s, "Self-Management") === 240 && credTally(s, "Creativity") === 325 && credTally(s, "Communication") === 220;
+  }));
+  check("R6c: a student with no submitted input shows no delta", await page.evaluate(() =>
+    eduPendingTotal(getStudent(4)) === 0));
+  await shot("39-r6c-pending-delta");
+  // editing a scored row after submitting re-arms it
+  await page.evaluate(() => { location.hash = "#/credentials"; }); await page.waitForTimeout(400);
+  await page.evaluate(() => document.querySelector('#view [data-sbtab="Educator Input"]').click()); await page.waitForTimeout(320);
+  await page.evaluate(i => document.querySelector(`#view [data-edu="${i}::Teamwork::1"]`).click(), eduSid); await page.waitForTimeout(320);
+  check("R6c: changing a score after submitting re-arms the row", await page.evaluate(i => {
+    const b = document.querySelector(`#view [data-eduadd="${i}"]`);
+    return !!b && b.classList.contains("on") && eduPendingTotal(getStudent(i)) === 0;
+  }, eduSid));
+
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));
 
