@@ -935,10 +935,12 @@ function check(name, cond) {
     return b.classList.contains("done") && b.disabled && /Input Added/.test(b.textContent)
       && eduPendingTotal(getStudent(i)) === 20;
   }, eduSid));
-  check("R6c: the toast names the student and the points", await page.evaluate(i => {
+  check("R6c/R6d: the toast names the student and the points, no trailing qualifier", await page.evaluate(i => {
     const t = document.getElementById("toast");
     const s = getStudent(i);
-    return t && t.textContent.includes("+20") && t.textContent.includes(s.last) && /pending verification/.test(t.textContent);
+    return t && t.textContent.includes("+20") && t.textContent.includes(s.last)
+      && !/pending verification/i.test(t.textContent)
+      && t.textContent.trim().endsWith(s.last);
   }, eduSid));
   await shot("38-r6c-add-input");
   // the loop closes on that student's record
@@ -969,6 +971,25 @@ function check(name, cond) {
     const b = document.querySelector(`#view [data-eduadd="${i}"]`);
     return !!b && b.classList.contains("on") && eduPendingTotal(getStudent(i)) === 0;
   }, eduSid));
+
+  /* ---------------- R6d (Tyler follow-ups) ---------------- */
+  await page.evaluate(() => { location.hash = "#/credentials"; }); await page.waitForTimeout(400);
+  await page.evaluate(() => document.querySelector('#view [data-sbtab="Educator Input"]').click()); await page.waitForTimeout(350);
+  check("R6d: every student name in the grid is a link to that record", await page.evaluate(() => {
+    const names = [...document.querySelectorAll("#view table.edu tbody .edu-name")];
+    return names.length === 10 && names.every(n => n.dataset.nav === "#/student/" + eduStudents()[names.indexOf(n)].id);
+  }));
+  check("R6d: the name reads as clickable", await page.evaluate(() =>
+    getComputedStyle(document.querySelector("#view table.edu tbody .edu-name")).cursor === "pointer"));
+  const eduNavId = await page.evaluate(() => eduStudents()[2].id);
+  await page.evaluate(() => document.querySelectorAll("#view table.edu tbody .edu-name")[2].click()); await page.waitForTimeout(400);
+  check("R6d: clicking the name opens that student's record", await page.evaluate(i =>
+    location.hash === "#/student/" + i, eduNavId));
+  check("R6d: it lands on the right student", await page.evaluate(i => {
+    const s = getStudent(i);
+    return document.querySelector("#view .sd-name").textContent.trim() === s.first + " " + s.last;
+  }, eduNavId));
+  await shot("40-r6d-name-nav");
 
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));

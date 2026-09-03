@@ -432,6 +432,8 @@ table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;pa
 .edu-cta.done{background:var(--risk-low-bg);border-color:var(--risk-low-bg);color:var(--risk-low-fg);opacity:1}
 .edu-cta.done svg{width:11px;height:11px}
 .pending{color:var(--risk-med-fg);font-weight:700;font-size:12px}
+.edu-name{cursor:pointer}
+.edu-name:hover{color:var(--primary);text-decoration:underline}
 /* Educator Input grid (R6) */
 .edu-scroll{overflow-x:auto}
 table.data.edu{table-layout:auto;min-width:100%}
@@ -2318,7 +2320,7 @@ function eduInputModule(){
       <tbody>
         ${students.map(s => `
         <tr>
-          <td><div class="cell-name"><div class="avatar">${s.initials}</div><b>${s.first} ${s.last}</b></div>
+          <td><div class="cell-name"><div class="avatar">${s.initials}</div><b class="edu-name" data-nav="#/student/${s.id}" title="Open ${s.first} ${s.last}'s record">${s.first} ${s.last}</b></div>
             <div class="edu-setall"><span>All</span>
               ${[2, 1, 0].map(n => `<button class="edu-mini" data-eduall="${s.id}::${n}" title="Score every column ${n} for ${s.first}">${n}</button>`).join("")}
               <button class="edu-mini clear" data-eduall="${s.id}::x" title="Clear all scores for ${s.first}">&times;</button>
@@ -4227,7 +4229,7 @@ function wireView(){
       const s = getStudent(el.dataset.eduadd);
       if (!s) return;
       const pts = eduSubmitRow(s);
-      showToast("+" + pts + " educator points added for " + s.first + " " + s.last + " — pending verification");
+      showToast("+" + pts + " educator points added for " + s.first + " " + s.last);
       render();
     });
   });
