@@ -421,6 +421,7 @@ table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;pa
 .av-box.on::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .av-foot{display:flex;justify-content:flex-end;font-size:12px;color:var(--n500);padding-top:12px}
 .av-fb-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.nb{white-space:nowrap}  /* R6b: Tyler — the district-goal phrase never splits across lines */
 /* Educator Input grid (R6) */
 .edu-scroll{overflow-x:auto}
 table.data.edu{table-layout:auto;min-width:100%}
@@ -1702,7 +1703,7 @@ function homeGradProfile(){
     <div class="card section-card" style="margin-bottom:0">
       <div class="section-head">
         <h2 class="section-title">Graduate Profile${gpTrendYear === "All" ? "" : " — Class of " + gpTrendYear}</h2>
-        <span class="section-hint">Portrait of a Graduate alignment · district goal ${GP_GOAL}%</span>
+        <span class="section-hint">Portrait of a Graduate alignment · <span class="nb">district goal ${GP_GOAL}%</span></span>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         ${years.map(y => `<button class="gy-chip ${gpTrendYear === y ? "on" : ""}" data-gpyear="${y}">${y === "All" ? "All Students" : y}</button>`).join("")}
@@ -2164,12 +2165,12 @@ function viewStudent(id){
       </div>
     </div>
     <div class="col">
-      <div class="sd-sec-title">Credential Progress <small style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
+      <div class="sd-sec-title">Credential Progress <small class="nb" style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
       ${COMPS.map(c => `<div class="stu-hdr-row"><span>${c}</span><b>${credTally(s, c)} of ${CRED_MAX}</b></div>`).join("")}
       ${goalRing(gp, "of the district's<br>Graduate Profile goal")}
     </div>
     <div class="col">
-      <div class="sd-sec-title">Graduate Profile Alignment <small style="text-transform:none;letter-spacing:0">(District goal ${GP_GOAL}%)</small></div>
+      <div class="sd-sec-title">Graduate Profile Alignment <small class="nb" style="text-transform:none;letter-spacing:0">(District goal ${GP_GOAL}%)</small></div>
       ${GP_COMPS.map(c => `<div class="stu-hdr-row"><span style="${GP_EXTRA.includes(c) ? "color:var(--primary)" : ""}">${c}</span><b>${gpOf(s, c)}%</b></div>`).join("")}
     </div>
   </div>
@@ -2663,7 +2664,8 @@ function sbLibraryCard(){
       ${(SB_LIBRARY[sbTab] || []).map((e, i) => sbEntryHtml(sbTab, e, i)).join("") || `<p class="section-hint">No Skills Builders in ${sbTab} yet.</p>`}`}
   </div>`;
 }
-/* -- R2: Percentage of District Goal — interactive compare by cohort and month -- */
+/* -- R2: Credential Progress Percentage (renamed from "Percentage of District Goal", Tyler 2026-09-02)
+      — interactive compare by cohort and month -- */
 const PDG_BASE = { "Teamwork": 66, "Communication": 62, "Self-Management": 55, "Adaptability": 49, "Creativity": 44 };
 const PDG_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const PDG_MONTH_ADJ = { "Sep": -2, "Oct": 0, "Nov": 1, "Dec": 2, "Jan": 4, "Feb": 6, "Mar": 7, "Apr": 9, "May": 10, "Jun": 12, "Jul": 12, "Aug": -2 };
@@ -2692,8 +2694,8 @@ function pdgModule(){
   return `
   <div class="card section-card">
     <div class="section-head">
-      <h2 class="section-title">Percentage of District Goal</h2>
-      <span class="section-hint">Credential progress vs. the ${CRED_GOAL}-point district goal (75%)</span>
+      <h2 class="section-title">Credential Progress Percentage</h2>
+      <span class="section-hint">Credential progress vs. the <span class="nb">${CRED_GOAL}-point district goal (75%)</span></span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
       <span class="chip-axis">Class</span>
@@ -2746,7 +2748,7 @@ function viewCredentials(){
     <div class="card metric-card">
       <div class="metric-label">Avg Points per Student</div>
       <div class="metric-value">248</div>
-      <div class="metric-note">district goal: 375 of 500</div>
+      <div class="metric-note nb">district goal: 375 of 500</div>
     </div>
   </div>
 
@@ -3187,12 +3189,12 @@ function sdHeadCard(){
       </div>
     </div>
     <div class="col">
-      <div class="sd-sec-title">Credential Progress <small style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
+      <div class="sd-sec-title">Credential Progress <small class="nb" style="text-transform:none;letter-spacing:0">(District goal ${CRED_GOAL})</small></div>
       ${COMPS.map(c => `<div class="stu-hdr-row"><span>${c}</span><b>${stuTally(c)} of ${CRED_MAX}</b></div>`).join("")}
       ${goalRing(gp, "of your district's<br>Graduate Profile goal")}
     </div>
     <div class="col">
-      <div class="sd-sec-title">Graduate Profile Alignment <small style="text-transform:none;letter-spacing:0">(District goal ${GP_GOAL}%)</small></div>
+      <div class="sd-sec-title">Graduate Profile Alignment <small class="nb" style="text-transform:none;letter-spacing:0">(District goal ${GP_GOAL}%)</small></div>
       ${GP_COMPS.map(c => `<div class="stu-hdr-row"><span style="${GP_EXTRA.includes(c) ? "color:var(--primary)" : ""}">${c}</span><b>${gpOf(s, c)}%</b></div>`).join("")}
     </div>
   </div>`;
@@ -4259,7 +4261,7 @@ function wireView(){
     showToast("Skills Builder saved to your library");
     location.hash = "#/credentials";
   });
-  /* R2: Percentage of District Goal — cohort/month compare */
+  /* R2: Credential Progress Percentage — cohort/month compare */
   document.querySelectorAll("#view [data-pdg]").forEach(el => {
     el.addEventListener("click", () => {
       const t = el.dataset.pdg;

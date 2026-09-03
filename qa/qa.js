@@ -277,9 +277,9 @@ function check(name, cond) {
   await page.click('#view .assess-row[data-sbtab="Sciences"]'); await page.waitForTimeout(180);
   check("my library row click-through (R2)", await page.evaluate(() => sbTab === "Sciences"));
 
-  // R2: Percentage of District Goal module
+  // R2: Credential Progress Percentage module (renamed R6b)
   vtext = await page.textContent("#view");
-  check("credentials: PDG module replaces points cards (R2)", vtext.includes("Percentage of District Goal") && !vtext.includes("Points by Competency") && !vtext.includes("Points Awarded per Cycle") && !vtext.includes("Recent Skills Builders"));
+  check("credentials: PDG module replaces points cards (R2)", vtext.includes("Credential Progress Percentage") && !vtext.includes("Percentage of District Goal") && !vtext.includes("Points by Competency") && !vtext.includes("Points Awarded per Cycle") && !vtext.includes("Recent Skills Builders"));
   check("credentials: PDG chips incl months (R2)", (await page.$$eval("[data-pdg]", els => els.length)) === 20 && !!(await page.$("#pdgClear")));
   await page.click('[data-pdg="2028"]'); await page.waitForTimeout(120);
   await page.click('[data-pdg="Oct"]'); await page.waitForTimeout(120);
@@ -869,11 +869,11 @@ function check(name, cond) {
   await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(400);
   vtext = await page.textContent("#view");
   check("R6: Awaiting Verification removed from Home", !vtext.includes("awaiting sign-off") && !(await page.isVisible("#view table.av-home").catch(() => false)));
-  check("R6: Percentage of District Goal now on Home", vtext.includes("Percentage of District Goal"));
+  check("R6: Credential Progress Percentage now on Home", vtext.includes("Credential Progress Percentage"));
   check("R6: home order is Trend, Percentage of Goal, Graduate Profile", await page.evaluate(() => {
     const t = [...document.querySelectorAll("#view .section-title")].map(e => e.textContent.trim());
     const i = t.findIndex(x => x.startsWith("Competency Trend"));
-    const j = t.indexOf("Percentage of District Goal");
+    const j = t.indexOf("Credential Progress Percentage");
     const k = t.indexOf("Graduate Profile");
     return i > -1 && j > i && k > j;
   }));
@@ -883,6 +883,32 @@ function check(name, cond) {
     const o = await page.$$eval("#fCred option", e => e.map(x => x.textContent.trim()));
     return o[1] === "Awaiting Verification"; })());
   await shot("37-r6-home");
+
+  /* ---------------- R6b (Tyler, 9/2 follow-ups) ---------------- */
+  await page.evaluate(() => { location.hash = "#/credentials"; }); await page.waitForTimeout(400);
+  vtext = await page.textContent("#view");
+  check("R6b: module renamed on Credentials", vtext.includes("Credential Progress Percentage") && !vtext.includes("Percentage of District Goal"));
+  await page.evaluate(() => { location.hash = "#/home"; }); await page.waitForTimeout(400);
+  vtext = await page.textContent("#view");
+  check("R6b: module renamed on Home", vtext.includes("Credential Progress Percentage") && !vtext.includes("Percentage of District Goal"));
+  check("R6b: the district-goal phrase never wraps", await page.evaluate(() => {
+    const parts = [...document.querySelectorAll("#view .nb, #view .metric-note.nb")];
+    return parts.length > 0 && parts.every(e => {
+      const lh = parseFloat(getComputedStyle(e).lineHeight) || 20;
+      return e.getBoundingClientRect().height < lh * 1.6;
+    });
+  }));
+  // the phrase must also hold on a narrower laptop, which is where Tyler saw it break
+  await page3.evaluate(() => { location.hash = "#/student/4"; }); await page3.waitForTimeout(450);
+  check("R6b: goal phrase holds one line at 1280 on the student record", await page3.evaluate(() => {
+    const parts = [...document.querySelectorAll("#view .sd-sec-title .nb")];
+    return parts.length === 2 && parts.every(e => {
+      const lh = parseFloat(getComputedStyle(e).lineHeight) || 18;
+      return e.getBoundingClientRect().height < lh * 1.6;
+    });
+  }));
+  await page3.evaluate(() => { location.hash = "#/home"; }); await page3.waitForTimeout(400);
+  check("R6b: renamed module reads correctly at 1280", (await page3.textContent("#view")).includes("Credential Progress Percentage"));
 
   check("no page errors", errors.length === 0);
   if (errors.length) console.log("ERRORS:", errors.slice(0, 5));
