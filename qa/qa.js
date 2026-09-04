@@ -946,9 +946,21 @@ function check(name, cond) {
   // the loop closes on that student's record
   await page.evaluate(i => { location.hash = "#/student/" + i; }, eduSid); await page.waitForTimeout(450);
   vtext = await page.textContent("#view");
-  check("R6c: the record shows the pending banner", vtext.includes("+20 points pending verification"));
+  check("R6e: the record shows the points as posted and attributed", vtext.includes("+20 points added by Ms. Jones"));
+  check("R6e: no verification language attaches to educator input", await page.evaluate(() => {
+    const card = [...document.querySelectorAll("#view .section-card")].find(c => /Credential Points by Contributor/.test(c.textContent));
+    return card && !/pending|verif/i.test(card.textContent);
+  }));
+  check("R6e: the delta reads as posted, in green", await page.evaluate(() => {
+    const el = document.querySelector("#view table.csplit .posted");
+    return !!el && getComputedStyle(el).color === "rgb(21, 128, 61)";
+  }));
+  check("R6e: Awaiting Verification is untouched for student and parent submissions", await page.evaluate(() => {
+    const card = [...document.querySelectorAll("#view .section-card")].find(c => /Activities and experiences submitted/.test(c.textContent));
+    return !!card && /Awaiting Verification/.test(card.textContent);
+  }));
   check("R6c: each competency carries its own delta", await page.evaluate(() =>
-    document.querySelectorAll("#view table.csplit .pending").length === COMPS.length * 2 + 2));
+    document.querySelectorAll("#view table.csplit .posted").length === COMPS.length * 2 + 2));
   check("R6c: published totals are NOT altered by pending input", await page.evaluate(i => {
     const s = getStudent(i);
     return COMPS.every(c => {

@@ -422,7 +422,7 @@ table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;pa
 .av-foot{display:flex;justify-content:flex-end;font-size:12px;color:var(--n500);padding-top:12px}
 .av-fb-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .nb{white-space:nowrap}  /* R6b: Tyler — the district-goal phrase never splits across lines */
-/* R6c · Add Input CTA and the pending-points delta it produces */
+/* R6c · Add Input CTA and the posted-points delta it produces */
 .edu-cta{margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;
   padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--n200);
   background:var(--surface);color:var(--n500);cursor:pointer;white-space:nowrap}
@@ -431,7 +431,7 @@ table.data.av .badge{display:inline-block;white-space:nowrap;font-size:11.5px;pa
 .edu-cta.on:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
 .edu-cta.done{background:var(--risk-low-bg);border-color:var(--risk-low-bg);color:var(--risk-low-fg);opacity:1}
 .edu-cta.done svg{width:11px;height:11px}
-.pending{color:var(--risk-med-fg);font-weight:700;font-size:12px}
+.posted{color:var(--risk-low-fg);font-weight:700;font-size:12px}  /* R6e: educator input posts, it does not await sign-off */
 .edu-name{cursor:pointer}
 .edu-name:hover{color:var(--primary);text-decoration:underline}
 /* Educator Input grid (R6) */
@@ -2092,14 +2092,14 @@ function credSplit(s, comp){
 function credSplitModule(s){
   const rows = COMPS.map(c => [c, credSplit(s, c)]);
   const sum = k => rows.reduce((t, [, v]) => t + v[k], 0);
-  const pend = eduPendingTotal(s);  /* R6c: educator input awaiting verification */
+  const pend = eduPendingTotal(s);  /* R6e: educator input posted this cycle */
   return `
   <div class="card section-card">
     <div class="section-head" style="margin-bottom:6px">
       <h2 class="section-title" style="font-size:16px">Credential Points by Contributor</h2>
       <span class="section-hint">Where ${s.first}'s points came from</span>
     </div>
-    <p class="section-hint" style="margin-bottom:14px">Student entries · educator input from faculty such as Ms. Jones · other input from coaches, counselors, parents and mentors.${pend ? ` <b class="pending">+${pend} points pending verification</b> from Educator Input.` : ""}</p>
+    <p class="section-hint" style="margin-bottom:14px">Student entries · educator input from faculty such as Ms. Jones · other input from coaches, counselors, parents and mentors.${pend ? ` <b class="posted">+${pend} points added by ${EDU_TEACHER}</b> this cycle.` : ""}</p>
     <table class="data av csplit">
       <thead><tr><th>Competency</th><th>Student</th><th>Educator</th><th>Other</th><th>Total</th></tr></thead>
       <tbody>
@@ -2107,16 +2107,16 @@ function credSplitModule(s){
         <tr>
           <td class="av-act">${c}</td>
           <td>${v.student}</td>
-          <td>${v.educator}${p ? ` <span class="pending">+${p}</span>` : ""}</td>
+          <td>${v.educator}${p ? ` <span class="posted">+${p}</span>` : ""}</td>
           <td>${v.other}</td>
-          <td><b>${v.total}</b>${p ? ` <span class="pending">+${p}</span>` : ""} <span class="av-sub" style="display:inline">of ${CRED_MAX}</span></td>
+          <td><b>${v.total}</b>${p ? ` <span class="posted">+${p}</span>` : ""} <span class="av-sub" style="display:inline">of ${CRED_MAX}</span></td>
         </tr>`; }).join("")}
         <tr class="csplit-tot">
           <td><b>All competencies</b></td>
           <td><b>${sum("student")}</b></td>
-          <td><b>${sum("educator")}</b>${pend ? ` <span class="pending">+${pend}</span>` : ""}</td>
+          <td><b>${sum("educator")}</b>${pend ? ` <span class="posted">+${pend}</span>` : ""}</td>
           <td><b>${sum("other")}</b></td>
-          <td><b>${sum("total")}</b>${pend ? ` <span class="pending">+${pend}</span>` : ""}</td>
+          <td><b>${sum("total")}</b>${pend ? ` <span class="posted">+${pend}</span>` : ""}</td>
         </tr>
       </tbody>
     </table>
@@ -2247,6 +2247,7 @@ const EDU_SUB = {  /* verbatim from COMP_INFO.subskills, four per competency */
   "Communication": ["Active Listening","Clarity","Articulate","Respectful"]
 };
 const EDU_BUILDER = "Chemistry Lab";
+const EDU_TEACHER = "Ms. Jones";
 const EDU_ROWS = 10;
 let eduScores = {};    /* "studentId|skill" -> 2 | 1 | 0 */
 let eduOpen = null;    /* competency drilled into, or null for the five-column view */
@@ -2296,7 +2297,7 @@ function eduInputModule(){
   <div class="card section-card">
     <div class="section-head" style="margin-bottom:6px">
       <h2 class="section-title" style="font-size:16px">Educator Input</h2>
-      <span class="section-hint">Ms. Jones · ${EDU_BUILDER} · Chemistry 11</span>
+      <span class="section-hint">${EDU_TEACHER} · ${EDU_BUILDER} · Chemistry 11</span>
     </div>
     <p class="section-hint" style="margin-bottom:14px">
       Score each student 2, 1 or 0 for this Skills Builder. One value per skill; click a checked box to clear it.
